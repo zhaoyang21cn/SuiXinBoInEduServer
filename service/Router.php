@@ -45,21 +45,11 @@ class Router
             'livestreamlist' => 'GetLiveStreamListCmd',
             'getroomplayurl' => 'GetRoomPlayUrlCmd',
 
-			//获取跨房连麦密钥
+            //获取跨房连麦密钥
             'linksig' => 'GetLinkSigCmd',
 
-			//callback
-			'callback' => 'CallbackCmd',
-
-            //old
-            'start' => 'LiveStartCmd',
-            'list' => 'LiveListCmd',
-            'end' => 'LiveEndCmd',
-            'host_heartbeat' => 'LiveHostHeartBeatCmd',
-        ),
-        'user_av_room' => array(
-            'get' => 'UserAvRoomGetCmd',
-
+            //callback
+            'callback' => 'CallbackCmd',
         ),
         'cos' => array(
             'get_sign' => 'CosGetSignCmd',

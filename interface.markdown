@@ -1,48 +1,38 @@
-## 随心播 Server 接口文档
+## 随心播.教育 Server 接口文档
 
 ### 版本说明
 
 版本  | 时间  | 备注
 :-----: | :-----: | :-----: 
-1.0|2016.11.4|实现独立模式账户验证<br/>实现互动直播基本后台接口
-1.1|2016.11.9|添加token机制<br/>添加请求防篡改检验<br/>去掉上报主播资料<br/>添加房间退出上报<br/>添加点播视频上报
-1.2|2016.12.1|增加appid过滤<br/>增加在线人数上报<br/>获取房间内人数接口
-1.3|2016.12.28|调整上报接口<br/>增加拉流接口
-1.4|2017.03.21|增加踢人接口
-1.5|2017.04.13|增加跨房连麦接口
-1.6|2017.04.26|增加多appid支持
+1.0|2017.8.9|init
 
 ### 更新日志
 
-2017.07.14
-
-    更新了房间机制，为了获取到历史房间信息，主播和房间不再是唯一对应的关系，每次创建房间都会产生新的房间。更新代码请注意同步sql文件里的变动来更新你的数据库。
-
 ### 功能说明
 
-本代码完整演示了独立账户模式下互动直播业务后台的功能。可以直接和互动直播的客户端demo配合使用，迅速体验互动直播的强大功能。
+本代码完整演示了独立账户模式下互动直播业务在线教育场景的功能。可以直接和客户端demo配合使用，迅速体验互动直播的强大功能。
 
-#### 已实现功能点
+#### 接口列表
 
 * 注册
 * 登录
-* 创建房间
-* 上报创建房间结果
-* 拉取直播房间列表
-* 上报进入房间信息
-* 拉取房间成员列表
+* 下线(退出)
+
+* 创建课堂
+* 开课
+* 下课
 * 心跳上报
-* 申请上麦
-* 申请上麦结果上报
-* 录制视频完成上报
-* 退出房间
-* 拉取点播列表
-* 拉取旁路直播地址列表
-* 拉取指定房间的旁路直播地址
-* 下线
-* 推流和录制回调接口
-* 踢人
-* 跨房连麦
+* 拉取课程列表
+* 上报房间成员变化(成员进出房间)
+* 拉取房间成员列表
+* 课件关联上报
+* 播片源关联上报
+* 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
+* 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
+* 录制开始回调
+* 录制结束回调接口
+* 索引文件生成完成回调接口
+
 
 #### 需自行实现的功能点
 
@@ -53,6 +43,7 @@
 http POST提交数据，请求字段和应答字段以json封装。
 
 ### 通用字段说明
+注:在例子中,通用字段可能没有列出来.正式请求时请带上来.
 
 Response公共字段说明
 
@@ -68,9 +59,7 @@ data|Object|可选|返回数据内容
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 timeStamp|Integer|必填|时间戳(1970年1月1日以来的秒数)
-sign|String|必填|请求md5检验
-
-sign为对请求URL进行的md5计算
+appid|Integer|必填|要使用的AppID
 
 错误码
 
@@ -91,7 +80,7 @@ sign为对请求URL进行的md5计算
 20002|用户没有在直播
 90000|服务器内部错误
 
-### 一 注册
+### 注册
 
 向后台申请注册用户账号
 
@@ -103,13 +92,14 @@ index.php?svc=account&cmd=regist
 * request字段示例
 
 ```json
- { "id":"user000", "pwd": "密码"}
+ { "id":"user000", "pwd": "密码",role:1}
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 id|String|必填|用户id
 pwd|String|必填|密码(采用base64加密)
+role|int|必填|1 老师(主播) 0 学生(观众)
 
 * response字段示例
 
@@ -117,7 +107,7 @@ pwd|String|必填|密码(采用base64加密)
  {"errorCode": 0,"errorInfo": ""}
 ```
 
-### 二 登录
+### 登录
 
 登录并获取userSig
 
@@ -129,14 +119,13 @@ index.php?svc=account&cmd=login
 * request字段示例
 
 ```json
- { "id":"user000", "pwd": "密码", "appid": 12345678}
+ { "id":"user000", "pwd": "密码"}
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 id|String|必填|用户id
 pwd|String|必填|密码(采用base64加密)
-appid|Integer|可选|要使用的AppID
 
 * response字段示例
 
@@ -155,94 +144,24 @@ appid|Integer|可选|要使用的AppID
 userSig|String|必填|userSig用于IM登录
 token|String|必填|用户唯一标识(后续请求携带)
 
+### 下线(退出)
 
-### 三 创建房间
-
-申请创建直播房间，返回房间id和群组id
+* 通知后台用户离线
 
 * 请求URL  
  
 ```html
-index.php?svc=live&cmd=create
+index.php?svc=account&cmd=logout
 ```
 * request字段示例
 
 ```json
- {  "token":"[token]",
-	"type":"live"
- }
+ { "token":"[token]" }
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-type|String|必填|房间类型(live:直播)
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": "",
-	"data":{
-   		"roomnum": 123,
-		"groupid": "123"
-	}
- }
-
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-roomnum|Integer|必填|房间id(服务器分配的唯一房间id)
-groupid|String|选填|IM群组id
-
-* 房间id和群组id由服务器分配，保证唯一性(与id有对应关系)
-
-
-### 四 上报创建房间结果
-
-* 在腾讯视频云创建房间成功后上报房间信息
-
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=reportroom
-```
-* request字段示例
-
-```json
- {  "token": "[token]",
-	"room":{
-   		"title": "标题",
-   		"roomnum":18,
-   		"type":"live",
-   		"groupid":"18",
-   		"cover":"http://cover.png",
-		"appid": 1400019352,
-   		"device":0,
-   		"videotype":0
-	}
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-room|Object|必填|房间信息
-
-room信息
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-title|String|选填|标题
-type|String|必填|房间类型
-roomnum|Integer|必填|房间id
-groupid|String|必填|群组id
-cover|String|选填|封面地址
-host|String|必填|主播ID
-device|Integer|必填|0  IOS  1Android  2 PC
-videotype|Integer|必填|0 摄像头 1 屏幕分享
-appid|Integer|必填|appid
 
 * response字段示例
 
@@ -253,9 +172,145 @@ appid|Integer|必填|appid
 
 ```
 
-### 五 拉取直播房间列表
+### 创建课堂
 
-* 拉取正在直播中的房间列表
+申请创建直播房间，返回房间id和群组id. 老师才能调用.
+
+* 请求URL  
+ 
+```html
+index.php?svc=live&cmd=create
+```
+* request字段示例
+
+```json
+ {  "token":"[token]",
+	  "title":"math",
+	  "cover":"http://url.com/a.jpeg"
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+title|String|必填|课程名字
+cover|String|可选|课程封面图片
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+	"errorInfo": "",
+	"data":{
+   		"roomnum": 123,
+   		"groupid": "123"
+	}
+ }
+
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+roomnum|Integer|必填|房间id(服务器分配的唯一房间id)
+groupid|String|选填|IM群组id,客户端拿着这个id去创建IM群
+
+
+### 开课
+* 课程正式开讲.  创建课程和开课可能发生在不同的登录.老师可以先预先发布一个课程. 
+  老师才能调用.
+
+* 请求URL  
+ 
+```html
+index.php?svc=live&cmd=startcourse
+```
+* request字段示例
+
+```json
+ {  "token":"[token]",
+	"roomnum":18
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+roomnum|Integer|必填|房间id
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+	"errorInfo": ""
+ }
+
+```
+
+### 下课
+
+* 退出房间后上报信息. 下课会销毁房间.老师才能调用
+
+* 请求URL  
+ 
+```html
+index.php?svc=live&cmd=exitroom
+```
+* request字段示例
+
+```json
+ {  "token":"[token]",
+	"roomnum":18
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+roomnum|Integer|必填|房间id
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+	"errorInfo": ""
+ }
+
+```
+
+### 心跳上报
+
+* 用户在房间内定时进行心跳(3s)上报.学生和老师都需要发心跳.
+
+* 请求URL  
+ 
+```html
+index.php?svc=live&cmd=heartbeat
+```
+* request字段示例
+
+```json
+ {  "token":"[token]",
+	"roomnum":123
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+roomnum|Integer|必填|房间id
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+	"errorInfo": ""
+ }
+
+```
+
+### 拉取课程列表
+
+* 可以带条件,拉取课程列表.多个场景下调用.A.老师拉取自己创建的课程.B.学生拉取所有直播的课程.C.学生拉取可以回放的课程列表
 
 * 请求URL  
  
@@ -266,20 +321,33 @@ index.php?svc=live&cmd=roomlist
 
 ```json
  {  "token":"[token]",
-	"type":"live",
 	"index":0,
 	"size":10,
-	"appid": 1400019352
+	"from_time":1412345678,
+	"to_time":1412346678
+	"uid":"teacher",
+	"state":"living"
  }
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-type|Integer|选填|房间类型(没有表示全部)
 index|Integer|必填|起始房间位置(从0开始)
 size|Integer|必填|列表长度
-appid|Integer|选填|app标示
+from_time|Integer|选填|搜索开始时间戳(1970年1月1日以来的秒数)
+to_time|Integer|选填|搜索结束时间戳(1970年1月1日以来的秒数)
+uid|String|选填|要搜索的老师id. 没有这个字段表示搜索所有老师的
+state|String|选填|要拉取的课程的状态. 没有这个字段表示全部状态
+
+课程state取值
+state取值 | 描述
+:-----: | :-----: 
+created|已创建未上课
+living|正在上课中
+has_lived|已下课但不能回放
+can_playback|可以回放
+
 
 * response字段示例
 
@@ -289,28 +357,28 @@ appid|Integer|选填|app标示
 	"data":{
 	"total":100,
  	"rooms":[{
-		  "uid":"[uid]",
-          "info":{
+		         "uid":"[uid]",
           	 "title": "标题",
              "roomnum":18,
-             "type":"live",
+             "state":"can_playback",
              "groupid":"18",
              "cover":"http://cover.png",
-             "thumbup":23,
-             "memsize":23
-          }
+             "memsize":23,
+             "playback_indx_url":"http://xxxxx",
+             "begin_time":145668974,
+             "end_time":145668974
         },
         {
-		  "uid":"[uid]",
-          "info":{
+		        "uid":"[uid]",
             "title": "标题",
             "roomnum":19,
-            "type":"live",
+            "state":"living",
             "groupid":"19",
             "cover":"http://cover.png",
-            "thumbup":23,
-            "memsize":23
-          }      
+            "memsize":23,
+            "playback_indx_url":"",
+            "begin_time":145668974,
+            "end_time":145668974    
         }
     ]}
  }
@@ -322,23 +390,20 @@ total|Integer|必填|房间总数
 rooms|Array|必填|房间信息数组
 
 房间信息
-
 字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-info|Object|必填|房间具体信息
-uid|String|必填|主播id
-
-info信息
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-title|String|非必填|标题
-type|String|必填|房间类型
+:-----: | :-----: | :-----: | :-----:
+uid|String|必填|老师id 
+title|String| 选填|标题
+state|String|必填|课程状态
 roomnum|Integer|必填|房间id
 groupid|String|必填|群组id
-cover|String|非必填|封面地址
+cover|String| 选填|封面地址
+memsize|Integer|必填|课程参与人数
+playback_indx_url|String| 选填|回放索引文件地址
+begin_time|Integer|必填|课程开始时间
+end_time|Integer|必填|课程结束时间
 
-### 六 上报进入房间信息
+### 上报房间成员变化(成员进出房间)
 
 * 在腾讯视频云加入房间后，上报加入房间信息
 
@@ -352,7 +417,6 @@ index.php?svc=live&cmd=reportmemid
 ```json
  {  "token":"[token]",
 	"roomnum":18,
-	"role":1,
 	"operate":0
  }
 ```
@@ -361,7 +425,6 @@ index.php?svc=live&cmd=reportmemid
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
 roomnum|int|必填|房间号
-role|int|必填| 主播 1 成员 0 上麦成员 2
 operate|int|必填| 进入房间 0 离开房间 1
 
 
@@ -374,7 +437,7 @@ operate|int|必填| 进入房间 0 离开房间 1
 
 ```
 
-### 七 拉取房间成员列表
+### 拉取房间成员列表
 
 * 获取房间成员列表
 
@@ -428,32 +491,43 @@ id信息
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 id|String|必填|id
-role|int|必填|1主播 0成员 2 视频成员
+role|int|必填|1 老师(主播) 0 学生(观众)
 
-### 八 心跳上报
 
-* 用户在房间内定时进行心跳(10s)上报,同时上报点赞数
+
+
+### 课件关联上报
+
+* 在上传课件到cos后. 关联/取消关联课件到本课程
 
 * 请求URL  
  
 ```html
-index.php?svc=live&cmd=heartbeat
+index.php?svc=live&cmd=reportcourseware
 ```
 * request字段示例
 
 ```json
  {  "token":"[token]",
-	"roomnum":123,
-	"role":1
+	  "roomnum":18,
+	  "operate":0,
+	  "courseware":{
+		    "url":"[url]"
+     }
  }
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-roomnum|Integer|必填|房间id
-role|int|必填|1 主播 0 观众 2 上麦观众 
+roomnum|int|必填|房间号
+operate|int|必填| 关联 0 取消关联 1
+courseware|Object|必填|课件信息
 
+courseware信息
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+url|String|必填|资源key对应cos上的url
 
 * response字段示例
 
@@ -464,27 +538,37 @@ role|int|必填|1 主播 0 观众 2 上麦观众
 
 ```
 
-### 九 申请上麦
-
-* 用户申请在直播房间上麦,后台可以做权限控制
+### 播片源关联上报
+* 在上传课件到cos后. 关联/取消关联课件到本课程
 
 * 请求URL  
  
 ```html
-index.php?svc=live&cmd=request
+index.php?svc=live&cmd=reportvedio
 ```
 * request字段示例
 
 ```json
  {  "token":"[token]",
-	"roomnum":123
+	  "roomnum":18,
+	  "operate":0,
+	  "courseware":{
+		    "url":"[url]"
+     }
  }
 ```
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-roomnum|Integer|必填|房间id
+roomnum|int|必填|房间号
+operate|int|必填| 关联 0 取消关联 1
+courseware|Object|必填|课件信息
+
+courseware信息
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+url|String|必填|资源key对应cos上的url
 
 * response字段示例
 
@@ -495,397 +579,44 @@ roomnum|Integer|必填|房间id
 
 ```
 
-### 十 申请上麦结果上报
+### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
+### 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
 
-* 用户上麦成功/结束后上报
 
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=reportstatus
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"roomnum":123,
-	"status":"on"
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-roomnum|Integer|必填|房间id
-status|String|必填|状态:on-上麦，off-下麦
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": ""
- }
-
-```
-
-### 十一 开始录制视频上报
-
-* 手工录制视频开始的时候上报信息，用于点播
-
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=reportrecord
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"roomnum":10007,
-	"uid":"wilder4",
-	"name":"我的录制",
-	"type":0,
-	"cover":"http://cover.png"
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-roomnum|Int|必填|录制房间id
-uid|String|必填|主播用户id
-name|String|必填|录制文件名
-type|Integer|必填|类型
-cover|String|选填|封面地址
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": ""
- }
-
-```
-
-### 十二 退出房间
-
-* 退出房间后上报信息
-
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=exitroom
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"roomnum":18,
-	"type":"live"
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": ""
- }
-
-```
-
-### 十三 拉取点播列表
-
-* 拉取可用的点播列表
-
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=recordlist
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"type":0,
-	"index":0,
-	"size":10,
-	"s_uid": "green"
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-type|Integer|必填|类型过滤
-index|Integer|必填|起始房间位置(从0开始)
-size|Integer|必填|列表长度
-s_uid|String|选填|用于检索的用户id
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": "",
-	"data":{
-    "total":100,
-    	"videos":[
-    	{
-           "uid":"[uid]",
-           "name":"我的录制",
-           "cover":"http://cover.png",
-           "videoId":"[videoid]",
-           "playurl":[
-	         "playurl1",
-	         "playurl2"
-	         ]
-        }
-    	]
-	}
-}
-
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-total|Integer|必填|房间总数
-videos|Array|必填|视频信息数组
-
-video信息
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----:
-uid|String|必填|主播id
-playid|String|必填|点播id
-playurl|Array|必填|播放地址
-cover|String|选填|封面地址
-
-### 十四 拉取旁路直播地址列表
-
-* 拉取可用的旁路直播列表
-
-* 请求URL  
- 
-```html
-index.php?svc=live&cmd=livestreamlist
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"index":0,
-	"size":10
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-index|Integer|必填|起始房间位置(从0开始)
-size|Integer|必填|列表长度
-
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": "",
-	"data":{
-        "total":100,
-    	"videos":[
-        {
-           "uid":"[uid]",
-           "cover":"http://cover.png",
-           "address":"拼接地址",
-           "address2":"拼接地址",
-           "address3":"拼接地址"
-        }
-    	]
-	}
-}
-
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-total|Integer|必填|房间总数
-videos|Array|必填|视频信息数组
-
-video信息
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----:
-uid|String|必填|主播id
-cover|String|选填|封面地址
-address|String|必填|播放地址
-address2|String|选填|播放地址
-address3|String|选填|播放地址
-
-### 十五 拉取指定房间的旁路直播地址
-
-* 拉取指定房间的旁路直播地址
-
-* 请求URL  
- 
-```html
-http://服务器地址/sxb/index.php?svc=live&cmd=getroomplayurl
-```
-* request字段示例
-
-```json
- {  "token":"[token]",
-	"roomnum":1234
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-room|Integer|必填|房间id
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": "",
-	"data":{
-       "cover":"http://cover.png",
-       "address":"拼接地址",
-       "address2":"拼接地址",
-       "address3":"拼接地址"
-    }
-}
-
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-cover|String|选填|封面地址
-address|String|必填|播放地址
-address2|String|选填|播放地址
-address3|String|选填|播放地址
-
-### 十六 下线
-
-* 通知后台用户离线
-
-* 请求URL  
- 
-```html
-index.php?svc=account&cmd=logout
-```
-* request字段示例
-
-```json
- { "token":"[token]" }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-token|String|必填|用户token
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": ""
- }
-
-```
-
-### 十七 推流和录制回调接口
+### 录制开始回调
 
 * 接收旁路直播和录制相关服务器回调的通知
 
 * 请求URL
 
 ```php
-index.php?svc=live&cmd=callback
+index.php?svc=live&cmd=recstartcall
 ```
 * 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
 
-### 十八 踢人
+### 录制结束回调接口
 
-* 调用云通信API使用户sig失效
+* 接收旁路直播和录制相关服务器回调的通知
+
 * 请求URL
 
 ```php
-index.php?svc=account&cmd=kickout
+index.php?svc=live&cmd=recendcall
 ```
+* 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
 
-* request字段示例
+### 索引文件生成完成回调接口
 
-```json
- { "id":"admin",
-   "pwd": "管理员密码",
-   "kickid": "user1",
-   "holdsig": false,
-   "appid": 12345678
- }
-```
+* 接收索引文件生成服务器回调的通知
 
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-id|String|必填|管理员账号
-pwd|String|必填|管理员密码
-kickid|String|必填|被踢账号
-holdsig|Bool|可选|是否保留数据库中的userSig
-appid|Integer|可选|要使用的AppID
-
-
-`保留数据库中的userSig会导致在该userSig过期之前用户都无法再次正常登录`
-
-`必须在APP中处理被踢事件，才能保证用户被踢后马上退出直播间，详情参照:`[直播被中断事件的处理](https://www.qcloud.com/document/product/268/7648) 
-
-* response字段示例
-
-```json
- {	"errorCode": 0,
-	"errorInfo": ""
- }
-
-```
-
-### 十九 跨房连麦
-
-* 使用TEA加密算法生成跨房连麦密钥
 * 请求URL
 
 ```php
-index.php?svc=live&cmd=linksig
+index.php?svc=live&cmd=idxfileendcall
 ```
 
-* request字段示例
+ 
 
-```json
- { "id":"user",
-   "roomnum": 10001,
-   "token": "[token]",
-   "appid": 12345678,
-   "current_roomnum": 10000
- }
-```
 
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-id|String|必填|要连麦的目标用户ID
-roomnum|Integer|必填|要连麦的目标用户房间号
-token|String|必填|用户token
-appid|Integer|可选|要使用的AppID
-current_roomnum|Integer|必填|用户发起连麦的当前房间号
 
-* response字段示例
 
-```json
- {	"errorCode": 0,
-	"errorInfo": "",
-	"data":{
-	  "linksig": "[linksig]"
-	}
- }
-
-```
