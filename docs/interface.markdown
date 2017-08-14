@@ -25,8 +25,8 @@
 * 拉取课程列表
 * 上报房间成员变化(成员进出房间)
 * 拉取房间成员列表
-* 课件关联上报
-* 播片源关联上报
+* 课件/播片源关联上报
+* 查询已关联的课件/播片
 * 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 * 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
 * 录制开始回调
@@ -498,14 +498,14 @@ role|int|必填|1 老师(主播) 0 学生(观众)
 
 
 
-### 课件关联上报
+### 课件/播片源关联上报
 
-* 在上传课件到cos后. 关联/取消关联课件到本课程
+* 在上传课件到cos后. 关联/取消关联课件/播片源到本课程
 
 * 请求URL  
  
 ```html
-index.php?svc=live&cmd=reportcourseware
+index.php?svc=live&cmd=reportbind
 ```
 * request字段示例
 
@@ -513,7 +513,9 @@ index.php?svc=live&cmd=reportcourseware
  {  "token":"[token]",
 	  "roomnum":18,
 	  "operate":0,
-	  "courseware":{
+	  "bind_file":{
+                    "type":0,
+                    "file_name":"file_name",
 		    "url":"[url]"
      }
  }
@@ -524,13 +526,15 @@ index.php?svc=live&cmd=reportcourseware
 token|String|必填|用户token
 roomnum|int|必填|房间号
 operate|int|必填| 关联 0 取消关联 1
-courseware|Object|必填|课件信息
+bind_file|Object|必填|课件信息
 
-courseware信息
+bind_file信息
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
-url|String|必填|资源key对应cos上的url
+type|int|必填|资源类型,0:课件,1:播片
+file_name|String|必填|文件名
+url|String|必填|资源对应的url
 
 * response字段示例
 
@@ -541,23 +545,19 @@ url|String|必填|资源key对应cos上的url
 
 ```
 
-### 播片源关联上报
-* 在上传课件到cos后. 关联/取消关联课件到本课程
+### 查询已关联的课件/播片
+* 查询课堂已关联的资源列表
 
 * 请求URL  
  
 ```html
-index.php?svc=live&cmd=reportvedio
+index.php?svc=live&cmd=querybind
 ```
 * request字段示例
 
 ```json
  {  "token":"[token]",
-	  "roomnum":18,
-	  "operate":0,
-	  "courseware":{
-		    "url":"[url]"
-     }
+    "roomnum":18
  }
 ```
 
@@ -565,23 +565,40 @@ index.php?svc=live&cmd=reportvedio
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
 roomnum|int|必填|房间号
-operate|int|必填| 关联 0 取消关联 1
-courseware|Object|必填|课件信息
-
-courseware信息
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-url|String|必填|资源key对应cos上的url
 
 * response字段示例
 
 ```json
  {  "errorCode": 0,
-	"errorInfo": ""
+    "errorInfo": ""
+    "data":{
+        "total":2,
+        "bind_files":[{
+            "type":0,
+            "file_name":"file_name",
+            "url":"[url]"
+         },
+         {
+            "type":0,
+            "file_name":"file_name",
+            "url":"[url]"
+        }]
+    }
  }
 
 ```
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+total|int|必填|记录数
+bind_files|Array|必填|bind_file数组
+
+bind_file信息
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+type|int|必填|资源类型,0:课件,1:播片
+file_name|String|必填|文件名
+url|String|必填|资源对应的url
 
 ### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 ### 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
