@@ -1,8 +1,6 @@
 <?php
 /**
- * 独立账号模块
- * Date: 2016/11/20
- * Update：2016/12/23
+ * 对应t_account
  */
 
 require_once dirname(__FILE__) . '/../Path.php';
@@ -13,15 +11,18 @@ class Account
     // 用户名 => string
     private $uid;
 
+    // appid => int 
+    private $appID;
+
+    // 用户角色 => int 
+    private $role;
+
     // 用户密码 => string
     private $pwd;
 
     // 用户token => string
     private $token;
 
-    // 用户登录状态 => int
-    private $state;
-    
     // 签名 => string
     private $userSig;
 
@@ -40,15 +41,15 @@ class Account
     public function __Construct()
     {
         $this->uid = '';
+        $this->appID=0;
+        $this->role=0;
         $this->pwd='';
         $this->token = '';
         $this->userSig = '';
-        $this->state = 0;
         $this->registerTime = 0;
         $this->loginTime = 0;
         $this->logoutTime = 0;
         $this->lastRequestTime = 0;
-        
     }
     
     public function getUser()
@@ -60,7 +61,27 @@ class Account
     {
         $this->uid = $uid;
     }
+
+    public function getAppID()
+    {
+        return $this->appID;
+    }
     
+    public function setAppID($appID)
+    {
+        $this->appID = $appID;
+    }
+
+    public function getRole()
+    {
+        return $this->role;
+    }
+    
+    public function setRole($role)
+    {
+        $this->role = $role;
+    }
+
     public function getPwd()
     {
         return $this->pwd;
@@ -69,11 +90,6 @@ class Account
     public function setPwd($pwd)
     {
         $this->pwd = $pwd;
-    }
-    
-    public function getState()
-    {
-        return $this->state;
     }
     
     public function getToken()
@@ -471,7 +487,7 @@ class Account
             }
             
             // 添加用户
-            $sql = 'INSERT INTO t_account set uid=:uid, pwd=:pwd, register_time=:registerTime';
+            $sql = 'INSERT INTO t_account set uid=:uid, pwd=:pwd, register_time=:registerTime,role=:role,appid=:appid';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':uid', $this->uid, PDO::PARAM_STR);
 
@@ -487,6 +503,8 @@ class Account
             }
             $stmt->bindParam(':registerTime', $this->registerTime, PDO::PARAM_INT);
             $stmt->bindParam(':pwd', $pwd[0], PDO::PARAM_STR);
+            $stmt->bindParam(':role', $this->role, PDO::PARAM_INT);
+            $stmt->bindParam(':appid', $this->appID, PDO::PARAM_INT);
                         
             $result = $stmt->execute();
             if (!$result)

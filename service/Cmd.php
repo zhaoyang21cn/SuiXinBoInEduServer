@@ -3,12 +3,13 @@
 require_once 'CmdResp.php';
 
 /**
- * Date: 2016/4/19
+ * 所有不带token访问的命令的基类
  */
 abstract class Cmd
 {
 
     protected $req;
+    protected $appID;
 
     private function loadJsonReq()
     {
@@ -51,6 +52,27 @@ abstract class Cmd
         {
             return new CmdResp(ERR_REQ_JSON, 'HTTP Request Json Parse Error');
         }
+	
+        //必填字段校验
+        if (empty($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of appid');
+        }
+        if (!is_int($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid id');
+        }
+        $this->appID=$this->req['appid'];
+
+        if (empty($this->req['timeStamp']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of timeStamp');
+        }
+        if (!is_int($this->req['timeStamp']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid timeStamp');
+        }
+
         $resp = $this->parseInput();
         if (!$resp->isSuccess())
         {

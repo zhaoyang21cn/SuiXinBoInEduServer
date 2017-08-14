@@ -1,8 +1,7 @@
 <?php
 
 /**
- * 用户注册接口
- * Date: 2016/11/15
+ * 
  */
 
 require_once dirname(__FILE__) . '/../../Path.php';
@@ -31,7 +30,7 @@ class AccountRegisterCmd extends Cmd
             return new CmdResp(ERR_REQ_DATA, 'Invalid id');
         }
         $this->account->setUser($this->req['id']);
-        
+
         if (empty($this->req['pwd']))
         {
             return new CmdResp(ERR_REQ_DATA, 'Lack of pwd');
@@ -41,6 +40,18 @@ class AccountRegisterCmd extends Cmd
             return new CmdResp(ERR_REQ_DATA, 'Invalid pwd');
         }
         $this->account->setPwd($this->req['pwd']);
+
+        if (!isset($this->req['role']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of role');
+        }
+        if (!is_int($this->req['role']) || ($this->req['role']!=0 && $this->req['role']!=1))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid role');
+        }
+        $this->account->setRole($this->req['role']);
+
+        $this->account->setAppID($this->appID);
         
         $this->account->setRegisterTime(date('U'));
         return new CmdResp(ERR_SUCCESS, '');

@@ -1,10 +1,7 @@
 <?php
 
 /**
- * 新的命令基类
- * Date: 2016/11/18
  * Tips：相比Cmd类，主要增加Token过期验证，并将用户token转换成用户名
- *       新的接口都继承于此类，除了心跳
  */
 
 require_once 'CmdResp.php';
@@ -15,6 +12,7 @@ abstract class TokenCmd
 
     protected $req;
     protected $user;
+    protected $appID;
 
     private function loadJsonReq()
     {
@@ -50,6 +48,26 @@ abstract class TokenCmd
     {
         if (!$this->loadJsonReq()) {
             return new CmdResp(ERR_REQ_JSON, 'HTTP Request Json Parse Error');
+        }
+
+        //必填字段校验
+        if (empty($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of appid');
+        }
+        if (!is_int($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid id');
+        }
+        $this->appID=$this->req['appid'];
+
+        if (empty($this->req['timeStamp']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of timeStamp');
+        }
+        if (!is_int($this->req['timeStamp']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid timeStamp');
         }
 
         if (empty($this->req['token'][0])) {
