@@ -576,7 +576,7 @@ class Account
         }
         try
         {    
-            $sql = 'UPDATE t_account SET `state` = 0, token=null, logout_time=:logoutTime WHERE token=:token';
+            $sql = 'UPDATE t_account SET token=null, logout_time=:logoutTime WHERE token=:token';
             $stmt = $dbh->prepare($sql);         
             $stmt->bindParam(':logoutTime', $this->logoutTime, PDO::PARAM_INT);
             $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
