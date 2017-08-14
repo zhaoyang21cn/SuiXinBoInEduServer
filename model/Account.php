@@ -187,13 +187,14 @@ class Account
                 $error_msg = 'User not exist';
                 return ERR_USER_NOT_EXIST;
             }
+            $this->appID= $row['appid'];
+            $this->role= $row['role'];
             $this->pwd= $row['pwd'];
-            $this->state = $row['state'];
             $this->token = $row['token'];
             $this->userSig = $row['user_sig'];
+            $this->registerTime = $row['register_time'];
             $this->loginTime = $row['login_time'];
             $this->logoutTime = $row['logout_time'];
-            $this->registerTime = $row['register_time'];
             $this->lastRequestTime = $row['last_request_time'];
         }
         catch (PDOException $e)
@@ -537,7 +538,7 @@ class Account
         }
         try
         {
-            $sql = 'UPDATE t_account SET `state` = 1, token=:token, user_sig=:userSig,  login_time=:loginTime, last_request_time=:lastRequestTime WHERE uid=:uid';
+            $sql = 'UPDATE t_account SET token=:token, user_sig=:userSig,  login_time=:loginTime, last_request_time=:lastRequestTime WHERE uid=:uid';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':lastRequestTime', $this->loginTime, PDO::PARAM_INT);
             $stmt->bindParam(':loginTime', $this->loginTime, PDO::PARAM_INT);
@@ -716,35 +717,6 @@ class Account
         return ERR_SUCCESS;
     }
 
-    public function updateCurrentAppid(&$error_msg, $sdkappid)
-    {
-        $dbh = DB::getPDOHandler();
-        if (is_null($dbh))
-        {
-            $error_msg = 'Server inner error';
-            return ERR_SERVER;
-        }
-        try
-        {
-            $sql = 'UPDATE t_account SET current_appid=:current_appid WHERE token=:token';
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':current_appid', $sdkappid, PDO::PARAM_INT);
-            $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
-            $result = $stmt->execute();
-            if (!$result)
-            {
-                $error_msg = 'Server inner error';
-                return ERR_SERVER;
-            }
-        }
-        catch (PDOException $e)
-        {
-            $error_msg = 'Server inner error';
-            return ERR_SERVER;
-        }
-        $error_msg = '';
-        return ERR_SUCCESS;
-    }
 }
 
 ?>

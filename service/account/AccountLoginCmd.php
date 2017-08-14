@@ -1,8 +1,7 @@
 <?php
 
 /**
- * 用户注册接口
- * Date: 2016/11/15
+ * 用户登录
  */
 
 require_once dirname(__FILE__) . '/../../Config.php';
@@ -15,7 +14,6 @@ class AccountLoginCmd extends Cmd
 {
     // 用户账号对象
     private $account;
-    private $appid;
     private $privatekey;
     private $publickey;
     
@@ -45,17 +43,8 @@ class AccountLoginCmd extends Cmd
             return new CmdResp(ERR_REQ_DATA, 'Invalid pwd');
         }
 
-        if (isset($this->req['appid']) && (is_int($this->req['appid']) || is_string($this->req['appid'])))
-        {
-            $this->appid = strval($this->req['appid']);
-        }
-        else
-        {
-            $this->appid = DEFAULT_SDK_APP_ID;
-        }
-
-        $this->privatekey = KEYS_PATH . '/' . $this->appid . '/private_key';
-        $this->publickey = KEYS_PATH . '/' . $this->appid . '/public_key';
+        $this->privatekey = KEYS_PATH . '/' . strval($this->appID) . '/private_key';
+        $this->publickey = KEYS_PATH . '/' . strval($this->appID) . '/public_key';
         if(!file_exists($this->privatekey) || !file_exists($this->publickey)){
             return new CmdResp(ERR_REQ_DATA, 'Invalid appid');
         }
@@ -86,16 +75,16 @@ class AccountLoginCmd extends Cmd
         $userSig = $account->getUserSig();
         if(empty($userSig))
         {
-            $userSig = $account->genUserSig($this->appid, $this->privatekey);
+            $userSig = $account->genUserSig($this->appID, $this->privatekey);
             // 更新对象account的成员userSig
             $account->setUserSig($userSig);
         } 
         else 
         {
-            $ret = $account->verifyUserSig($this->appid, $this->publickey);
+            $ret = $account->verifyUserSig($this->appID, $this->publickey);
             if($ret == 1) //过期重新生成
             {
-                $userSig = $account->genUserSig($this->appid, $this->privatekey);
+                $userSig = $account->genUserSig($this->appID, $this->privatekey);
                 // 更新对象account的成员userSig
                 $account->setUserSig($userSig);
             }
@@ -107,15 +96,6 @@ class AccountLoginCmd extends Cmd
         if(empty($userSig))
             return new CmdResp(ERR_SERVER, 'Server error: gen sig fail');
 
-//        $ret = $account->getState();
-//        if($ret == 1) //已登录
-//        {
-//            $data = array();
-//            $data['userSig'] = $account->getUserSig();
-//            $data['token'] = $account->getToken();
-//            return new CmdResp(ERR_SUCCESS, '', $data);
-//        }
-        
         //获取token
         $token = $account->genToken();
         if(empty($token))
@@ -134,18 +114,8 @@ class AccountLoginCmd extends Cmd
             return new CmdResp($ret, $errorMsg);
         }
 
-        //更新 app id
-        $ret = $account->updateCurrentAppid($errorMsg, $this->appid);
-
-        if ($ret != ERR_SUCCESS)
-        {
-            return new CmdResp($ret, $errorMsg);
-        }
-        else
-        {
-            $data['userSig'] = $userSig;
-            $data['token'] = $token;
-            return new CmdResp(ERR_SUCCESS, '', $data);
-        }
+	$data['userSig'] = $userSig;
+	$data['token'] = $token;
+	return new CmdResp(ERR_SUCCESS, '', $data);
     }
 }

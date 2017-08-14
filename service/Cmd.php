@@ -60,7 +60,7 @@ abstract class Cmd
         }
         if (!is_int($this->req['appid']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'Invalid id');
+            return new CmdResp(ERR_REQ_DATA, 'Invalid appidid');
         }
         $this->appID=$this->req['appid'];
 
