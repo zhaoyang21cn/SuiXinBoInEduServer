@@ -59,16 +59,11 @@ class CreateLiveRoomCmd extends TokenCmd
 
         //房间id
         $id = $this->course->getId();
-
+        
         //更新im群号.当前课程号和im群号值一样,类型不一样
-        $ret = $this->course->load(); 
-        if (!$ret)
-        {
-            return new CmdResp(ERR_SERVER, 'Server internal error: reload room info failed');
-        }
-        $this->course->SetImGroupID(strval($id));
-
-        $ret = $this->course->save(); 
+        $data = array();
+        $data[course::FIELD_IM_GROUP_ID] = strval($id);
+        $ret = $this->course->update($id,$data); 
         if (!$ret)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');

@@ -123,9 +123,9 @@ class Course
         {
             $sql = 'SELECT ' . implode(',', $fields) .
                    ' FROM t_course WHERE ' .
-                   self::FIELD_ID . ' = :id ';
+                   self::FIELD_ID . ' = :' . self::FIELD_ID;
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+            $stmt->bindParam(':'.self::FIELD_ID, $this->id, PDO::PARAM_INT);
             $result = $stmt->execute();
             if (!$result)
             {
@@ -217,6 +217,43 @@ class Course
                 return -1;
             }
             return $dbh->lastInsertId();
+        }
+        catch (PDOException $e)
+        {
+            return -1;
+        }
+    }
+
+
+    /* 功能：更新数据库的部分字段,$id课程号, $data要更新的字段名和值
+     * 说明：成功：更新记录数;出错：-1
+     */
+    public function update($id,$fields)
+    {
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            return -1;
+        }
+        try
+        {
+            $sql = 'update t_course set ';
+            $param = array();
+            foreach ($fields as $k => $v)
+            {
+                 $param[] = $k . '=' . ':' . $k;
+            }
+            $sql .= implode(', ', $param);
+            $sql .= ' WHERE ' . self::FIELD_ID . ' = :'.self::FIELD_ID;
+            $stmt = $dbh->prepare($sql);
+            $fields[self::FIELD_ID]=$id;
+            $result = $stmt->execute($fields);
+            if (!$result)
+            {
+                return -1;
+            }
+            $count = $stmt->rowCount();
+            return $count;
         }
         catch (PDOException $e)
         {
