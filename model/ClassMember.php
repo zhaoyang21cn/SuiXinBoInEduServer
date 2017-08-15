@@ -162,22 +162,26 @@ class ClassMember
 
     /* 功能：获取房间成员
      * 说明：从偏移（offset）处获取N（limit）条房间（roomnum）的成员信息；
+     *      同时用到了 用户表t_account,因为有些用户的属性需要从用户表获取
      *      成功返回房间成员信息，失败返回空
      */
     public static function getList($roomnum, $offset = 0, $limit = 50)
     {
-        $whereSql = " WHERE room_id = $roomnum ";
+        $whereSql = " WHERE a.room_id = $roomnum and a.uid=b.uid ";
 
         $dbh = DB::getPDOHandler();
-        $list = array();
         if (is_null($dbh))
         {
             return null;
         }
         try
         {
-            $sql = 'select uid from  t_class_member ' . $whereSql . ' LIMIT ' . (int)$offset . ',' . (int)$limit;
+            $sql = 'select a.uid as uid,b.role as role from  t_class_member as a,t_account as b ' . $whereSql . ' LIMIT ' . (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
+            if(!$stmt)
+            {
+                return null;
+            }
             $result = $stmt->execute();
             if (!$result)
             {
@@ -203,7 +207,7 @@ class ClassMember
      */
     public static function getCount($roomnum)
     {
-        $whereSql = " WHERE av_room_id=$roomnum";
+        $whereSql = " WHERE room_id=$roomnum";
 
         $dbh = DB::getPDOHandler();
         $list = array();

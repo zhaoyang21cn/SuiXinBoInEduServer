@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/../../Path.php';
 require_once SERVICE_PATH . '/TokenCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
-require_once MODEL_PATH . '/InteractAvRoom.php';
+require_once MODEL_PATH . '/ClassMember.php';
 
 class GetRoomMemberListCmd extends TokenCmd
 {
@@ -54,7 +54,7 @@ class GetRoomMemberListCmd extends TokenCmd
     public function handle()
     {
         //获取房间成员列表
-        $recordList = InteractAvRoom::getList($this->roomnum, $this->index, $this->size);
+        $recordList = ClassMember::getList($this->roomnum, $this->index, $this->size);
         if (is_null($recordList)) {
             return new CmdResp(ERR_SERVER, 'Server error: get member list fail');
         }
@@ -66,7 +66,7 @@ class GetRoomMemberListCmd extends TokenCmd
         }
 
         //获取房间成员总数
-        $totalCount = InteractAvRoom::getCount($this->roomnum);
+        $totalCount = ClassMember::getCount($this->roomnum);
         if ($totalCount < 0) {
             return new CmdResp(ERR_SERVER, 'Server internal error');
         }
