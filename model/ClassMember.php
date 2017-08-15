@@ -10,6 +10,12 @@ class ClassMember
     const FIELD_UID = 'uid';
     const FIELD_ROOM_ID = 'room_id';
     const FIELD_LAST_HEARTBEAT_TIME = 'last_heartbeat_time';
+    
+    //mysql错误信息记录
+    public $errorCode;
+    public $errorInfo;
+
+    //////////////////////////////////////////////////////////
 
     // 用户名 => string
     private $uid;
@@ -18,13 +24,13 @@ class ClassMember
     private $roomId = -1;
 
     //心跳时间 => int
-    private $lastHeartBeartTime = 0;
+    private $lastHeartBeatTime = 0;
 
     public function __construct($uid, $roomId)
     {
         $this->uid = $uid;
         $this->roomId = $roomId;
-        $this->lastHeartBeartTime = date('U'); 
+        $this->lastHeartBeatTime = date('U'); 
     }
 
     /* 功能：检查房间ID是否存在
@@ -52,13 +58,14 @@ class ClassMember
             {
                 return 1;
             }
+            return 0;
         }
         catch (PDOException $e)
         {
             return -1;
         }
             
-        return 0;
+        return -1;
     }
 
     /* 功能：成员进入房间
@@ -74,7 +81,7 @@ class ClassMember
         try
         {
             $sql = 'REPLACE INTO t_class_member (uid, room_id,last_heartbeat_time) '
-                    . ' VALUES (:uid, :roomId,:lastHeartBeat)';
+                    . ' VALUES (:uid, :roomId,:lastHeartBeatTime)';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':uid', $this->uid, PDO::PARAM_STR);
             $stmt->bindParam(':roomId', $this->roomId, PDO::PARAM_INT);
@@ -82,6 +89,8 @@ class ClassMember
             $result = $stmt->execute();
             if (!$result)
             {
+                $this->errorCode=$stmt->errorCode();
+                $this->errorInfo=$stmt->errorInfo();
                 return -1;
             }
             return 1;
