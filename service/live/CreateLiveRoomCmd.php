@@ -1,16 +1,13 @@
 <?php
 /**
- * 创建房间接口
- * Date: 2016/11/17
+ * 创建一个课堂,返回一个课堂id
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 
 require_once SERVICE_PATH . '/TokenCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
-require_once MODEL_PATH . '/AvRoom.php';
-require_once MODEL_PATH . '/NewLiveRecord.php';
-require_once MODEL_PATH . '/InteractAvRoom.php';
+require_once MODEL_PATH . '/Course.php';
 require_once MODEL_PATH . '/Account.php';
 
 require_once LIB_PATH . '/log/FileLogHandler.php';
@@ -19,75 +16,64 @@ require_once LIB_PATH . '/log/Log.php';
 class CreateLiveRoomCmd extends TokenCmd
 {
 
-    private $avRoom;
+    private $course;
 
     public function parseInput()
     {
-        if (!isset($this->req['type']))
+        $this->course = new Course();
+
+        if (!isset($this->req['title']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'Lack of type');
+            return new CmdResp(ERR_REQ_DATA, 'Lack of title');
         }
-        if (!is_string($this->req['type']))
+        if (!is_string($this->req['title']))
         {
-             return new CmdResp(ERR_REQ_DATA, ' Invalid type');
+             return new CmdResp(ERR_REQ_DATA, ' Invalid title');
+        }
+        $this->course->setTitle($this->req['title']);
+
+        if (isset($this->req['cover']) && !is_string($this->req['cover']))
+        {
+            return new CmdResp(ERR_REQ_DATA, ' Invalid cover');
         }
         
-        $this->avRoom = new AvRoom($this->user);
+        if(isset($this->req['cover']))
+        {
+            $this->course->setCover($this->req['cover']);
+        }
+
+        $this->course->setHostUid($this->user);
+        $this->course->SetAppID($this->appID);
+        
         return new CmdResp(ERR_SUCCESS, '');
     }
 
     public function handle()
     {
-        /*$ret = $this->avRoom->load();
-        // 加载房间出错
-        if ($ret < 0)
-        {
-            return new CmdResp(ERR_SERVER, 'Server internal error');
-        }
-
-        //房间不存在，执行创建
-        if($ret == 0)
-        {
-            $ret = $this->avRoom->create();
-            if (!$ret)
-            {
-                return new CmdResp(ERR_SERVER, 'Server internal error: create av room fail');
-            }
-        }*/
-
-        // 创建房间之前先清空数据
-        $ret = $this->avRoom->load();
-        // 存在旧房间
-        if ($ret > 0)
-        {
-            //Log::info('uid '.$this->user.' has old room '.$this->avRoom->getId().' to delete');
-            //删除直播记录
-            NewLiveRecord::delete($this->user);
-            //清空房间成员
-            InteractAvRoom::ClearRoomByRoomNum($this->avRoom->getId());
-        }
-
-        //Log::info('uid '.$this->user.' create room now');
-
         // 每次请求都创建一个新的房间出来
-        $ret = $this->avRoom->create();
+        $ret = $this->course->create();
         if (!$ret)
         {
-            //Log::error('uid '.$this->user.' create room failed');
-            return new CmdResp(ERR_SERVER, 'Server internal error: create av room fail');
+            return new CmdResp(ERR_SERVER, 'Server internal error: create room fail');
         }
 
         //房间id
-        $id = $this->avRoom->getId();
-        //房间成员设置
-        $interactAvRoom = new InteractAvRoom($this->user, $id, 'off', 1);
-        //主播加入房间列表
-        $ret = $interactAvRoom->enterRoom();    
-        if(!$ret)
+        $id = $this->course->getId();
+
+        //更新im群号.当前课程号和im群号值一样,类型不一样
+        $ret = $this->course->load(); 
+        if (!$ret)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error:insert record into interactroom fail'); 
+            return new CmdResp(ERR_SERVER, 'Server internal error: reload room info failed');
+        }
+        $this->course->SetImGroupID(strval($id));
+
+        $ret = $this->course->save(); 
+        if (!$ret)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }
 
         return new CmdResp(ERR_SUCCESS, '', array('roomnum' => (int)$id, 'groupid' => (string)$id));
-    }    
+    } 
 }

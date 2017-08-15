@@ -246,11 +246,13 @@ class Account
 
             $row = $stmt->fetch();
             $this->uid= $row['uid'];
-            $this->state = $row['state'];
+            $this->appID= $row['appid'];
+            $this->role= $row['role'];
+            $this->pwd= $row['pwd'];
             $this->userSig = $row['user_sig'];
+            $this->registerTime = $row['register_time'];
             $this->loginTime = $row['login_time'];
             $this->logoutTime = $row['logout_time'];
-            $this->registerTime = $row['register_time'];
             $this->lastRequestTime = $row['last_request_time'];
         }
         catch (PDOException $e)
