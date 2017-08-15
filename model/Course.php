@@ -7,7 +7,7 @@ require_once LIB_PATH . '/db/DB.php';
 
 class Course
 {
-    const FIELD_ID = 'id';
+    const FIELD_ROOM_ID = 'room_id';
     const FIELD_CREATE_TIME = 'create_time';
     const FIELD_START_TIME = 'start_time';
     const FIELD_END_TIME = 'end_time';
@@ -15,13 +15,13 @@ class Course
     const FIELD_APPID = 'appid';
     const FIELD_TITLE = 'title';
     const FIELD_COVER = 'cover';
-    const FIELD_HOST_UID = 'host_uid';
+    const FIELD_HOST_UIN = 'host_uin';
     const FIELD_STATE = 'state';
     const FIELD_IM_GROUP_ID = 'im_group_id';
     const FIELD_PLAYBACK_IDX_URL = 'playback_idx_url'; 
 
     // 课程ID => int
-    private $id = 0;
+    private $room_id = 0;
 
     // 创建时间 => int
     private $createTime=0;
@@ -44,8 +44,8 @@ class Course
     // 封面 => string
     private $cover = '';
 
-    // 老师UID => string
-    private $hostUid = '';
+    // 老师UIN => int 
+    private $hostUin = '';
 
     // 房间状态 => init
     private $state = 0;
@@ -69,9 +69,9 @@ class Course
         }
         try
         {
-            $sql = 'INSERT INTO t_course (host_uid, create_time,appid,title,cover,state) VALUES (:host_uid, :create_time,:appid,:title,:cover,0)';
+            $sql = 'INSERT INTO t_course (host_uin, create_time,appid,title,cover,state) VALUES (:host_uin, :create_time,:appid,:title,:cover,0)';
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':host_uid', $this->hostUid, PDO::PARAM_STR);
+            $stmt->bindParam(':host_uin', $this->hostUin, PDO::PARAM_INT);
             $stmt->bindParam(':create_time', date('U'), PDO::PARAM_INT);
             $stmt->bindParam(':appid',$this->appid, PDO::PARAM_INT);
             $stmt->bindParam(':title',$this->title, PDO::PARAM_STR);
@@ -82,9 +82,9 @@ class Course
                 return -1;
             }
 
-            $this->id = $dbh->lastInsertId();
+            $this->room_id = $dbh->lastInsertId();
             
-            return $this->id;
+            return $this->room_id;
         }
         catch (PDOException $e)
         {
@@ -106,7 +106,7 @@ class Course
             return -1;
         }
         $fields = array(
-            self::FIELD_ID,
+            self::FIELD_ROOM_ID,
             self::FIELD_CREATE_TIME,
             self::FIELD_START_TIME,          
             self::FIELD_END_TIME,          
@@ -114,7 +114,7 @@ class Course
             self::FIELD_APPID,
             self::FIELD_TITLE,
             self::FIELD_COVER,           
-            self::FIELD_HOST_UID,
+            self::FIELD_HOST_UIN,
             self::FIELD_STATE,
             self::FIELD_IM_GROUP_ID,
             self::FIELD_PLAYBACK_IDX_URL,
@@ -123,9 +123,9 @@ class Course
         {
             $sql = 'SELECT ' . implode(',', $fields) .
                    ' FROM t_course WHERE ' .
-                   self::FIELD_ID . ' = :' . self::FIELD_ID;
+                   self::FIELD_ROOM_ID . ' = :' . self::FIELD_ROOM_ID;
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':'.self::FIELD_ID, $this->id, PDO::PARAM_INT);
+            $stmt->bindParam(':'.self::FIELD_ROOM_ID, $this->room_id, PDO::PARAM_INT);
             $result = $stmt->execute();
             if (!$result)
             {
@@ -150,8 +150,8 @@ class Course
      */
     private function InitFromDBFields($fields)
     {
-	     if(array_key_exists(self::FIELD_ID, $fields))
-            $this->id = $fields[self::FIELD_ID];
+	     if(array_key_exists(self::FIELD_ROOM_ID, $fields))
+            $this->room_id = $fields[self::FIELD_ROOM_ID];
          if(array_key_exists(self::FIELD_CREATE_TIME, $fields))
             $this->createTime = $fields[self::FIELD_CREATE_TIME];
          if(array_key_exists(self::FIELD_START_TIME, $fields))
@@ -166,8 +166,8 @@ class Course
             $this->title = $fields[self::FIELD_TITLE];
          if(array_key_exists(self::FIELD_COVER, $fields))
             $this->cover = $fields[self::FIELD_COVER];
-         if(array_key_exists(self::FIELD_HOST_UID, $fields))
-            $this->host_uid = $fields[self::FIELD_HOST_UID];
+         if(array_key_exists(self::FIELD_HOST_UIN, $fields))
+            $this->host_uin = $fields[self::FIELD_HOST_UIN];
          if(array_key_exists(self::FIELD_STATE, $fields))
             $this->state = $fields[self::FIELD_STATE];
          if(array_key_exists(self::FIELD_IM_GROUP_ID, $fields))
@@ -187,7 +187,7 @@ class Course
             return -1;
         }
         $fields = array(
-            self::FIELD_ID => $this->id,
+            self::FIELD_ROOM_ID => $this->room_id,
             self::FIELD_CREATE_TIME => $this->createTime,
             self::FIELD_START_TIME => $this->startTime,
             self::FIELD_END_TIME => $this->endTime,
@@ -195,7 +195,7 @@ class Course
             self::FIELD_APPID => $this->appid,
             self::FIELD_TITLE => $this->title,
             self::FIELD_COVER => $this->cover,
-            self::FIELD_HOST_UID => $this->hostUid, 
+            self::FIELD_HOST_UIN => $this->hostUin, 
             self::FIELD_STATE => $this->state,
             self::FIELD_IM_GROUP_ID => $this->imGroupID, 
             self::FIELD_PLAYBACK_IDX_URL => $this->playbackIdxUrl
@@ -225,10 +225,10 @@ class Course
     }
 
 
-    /* 功能：更新数据库的部分字段,$id课程号, $data要更新的字段名和值
+    /* 功能：更新数据库的部分字段,$room_id课程号, $data要更新的字段名和值
      * 说明：成功：更新记录数;出错：-1
      */
-    public function update($id,$fields)
+    public function update($room_id,$fields)
     {
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))
@@ -244,9 +244,9 @@ class Course
                  $param[] = $k . '=' . ':' . $k;
             }
             $sql .= implode(', ', $param);
-            $sql .= ' WHERE ' . self::FIELD_ID . ' = :'.self::FIELD_ID;
+            $sql .= ' WHERE ' . self::FIELD_ROOM_ID . ' = :'.self::FIELD_ROOM_ID;
             $stmt = $dbh->prepare($sql);
-            $fields[self::FIELD_ID]=$id;
+            $fields[self::FIELD_ROOM_ID]=$room_id;
             $result = $stmt->execute($fields);
             if (!$result)
             {
@@ -270,15 +270,15 @@ class Course
             case self::FIELD_TITLE:
             case self::FIELD_COVER:
             case self::FIELD_IM_GROUP_ID:
-            case self::FIELD_HOST_UID:
             case self::FIELD_PLAYBACK_IDX_URL:
                 return PDO::PARAM_STR;
-            case self::FIELD_ID:
+            case self::FIELD_ROOM_ID:
             case self::FIELD_CREATE_TIME:
             case self::FIELD_START_TIME:
             case self::FIELD_END_TIME:
             case self::FIELD_LAST_UPDATE_TIME:
             case self::FIELD_APPID:
+            case self::FIELD_HOST_UIN:
                 return PDO::PARAM_INT;
             default:
                 break;
@@ -287,14 +287,14 @@ class Course
     }
 
     // Getters and Setters
-    public function getID()
+    public function getRoomID()
     {
-        return $this->id;
+        return $this->room_id;
     }
 
-    public function setID($id)
+    public function setRoomID($room_id)
     {
-        $this->id = $id;
+        $this->room_id = $room_id;
     }
 
     public function getCreateTime()
@@ -367,14 +367,14 @@ class Course
         $this->cover = $cover;
     }
 
-    public function getHostUid()
+    public function getHostUin()
     {
-        return $this->hostUid;
+        return $this->hostUin;
     }
 
-    public function setHostUid($hostUid)
+    public function setHostUin($hostUin)
     {
-        $this->hostUid = $hostUid;
+        $this->hostUin = $hostUin;
     }
 
     public function getImGroupID()

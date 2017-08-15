@@ -42,7 +42,7 @@ class CreateLiveRoomCmd extends TokenCmd
             $this->course->setCover($this->req['cover']);
         }
 
-        $this->course->setHostUid($this->user);
+        $this->course->setHostUin($this->uin);
         $this->course->SetAppID($this->appID);
         
         return new CmdResp(ERR_SUCCESS, '');
@@ -58,17 +58,17 @@ class CreateLiveRoomCmd extends TokenCmd
         }
 
         //房间id
-        $id = $this->course->getId();
+        $room_id = $this->course->getRoomId();
         
         //更新im群号.当前课程号和im群号值一样,类型不一样
         $data = array();
-        $data[course::FIELD_IM_GROUP_ID] = strval($id);
-        $ret = $this->course->update($id,$data); 
+        $data[course::FIELD_IM_GROUP_ID] = strval($room_id);
+        $ret = $this->course->update($room_id,$data); 
         if ($ret<=0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }
 
-        return new CmdResp(ERR_SUCCESS, '', array('roomnum' => (int)$id, 'groupid' => (string)$id));
+        return new CmdResp(ERR_SUCCESS, '', array('roomnum' => (int)$room_id, 'groupid' => (string)$room_id));
     } 
 }

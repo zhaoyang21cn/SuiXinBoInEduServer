@@ -7,7 +7,7 @@ require_once LIB_PATH . '/db/DB.php';
 
 class ClassMember
 {
-    const FIELD_UID = 'uid';
+    const FIELD_UIN = 'uin';
     const FIELD_ROOM_ID = 'room_id';
     const FIELD_LAST_HEARTBEAT_TIME = 'last_heartbeat_time';
     
@@ -17,8 +17,8 @@ class ClassMember
 
     //////////////////////////////////////////////////////////
 
-    // 用户名 => string
-    private $uid;
+    // 用户ID =>int 
+    private $uin;
 
     //房间ID => int
     private $roomId = -1;
@@ -26,9 +26,9 @@ class ClassMember
     //心跳时间 => int
     private $lastHeartBeatTime = 0;
 
-    public function __construct($uid, $roomId)
+    public function __construct($uin, $roomId)
     {
-        $this->uid = $uid;
+        $this->uin = $uin;
         $this->roomId = $roomId;
         $this->lastHeartBeatTime = date('U'); 
     }
@@ -80,10 +80,10 @@ class ClassMember
         }
         try
         {
-            $sql = 'REPLACE INTO t_class_member (uid, room_id,last_heartbeat_time) '
-                    . ' VALUES (:uid, :roomId,:lastHeartBeatTime)';
+            $sql = 'REPLACE INTO t_class_member (uin, room_id,last_heartbeat_time) '
+                    . ' VALUES (:uin, :roomId,:lastHeartBeatTime)';
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':uid', $this->uid, PDO::PARAM_STR);
+            $stmt->bindParam(':uin', $this->uin, PDO::PARAM_INT);
             $stmt->bindParam(':roomId', $this->roomId, PDO::PARAM_INT);
             $stmt->bindParam(':lastHeartBeatTime', $this->lastHeartBeatTime, PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -114,9 +114,9 @@ class ClassMember
         }
         try
         {
-            $sql = 'delete from t_class_member  where uid=:uid';
+            $sql = 'delete from t_class_member  where uin=:uin';
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':uid', $this->uid, PDO::PARAM_STR);
+            $stmt->bindParam(':uin', $this->uin, PDO::PARAM_INT);
             $result = $stmt->execute();
             if (!$result)
             {
@@ -167,7 +167,7 @@ class ClassMember
      */
     public static function getList($roomnum, $offset = 0, $limit = 50)
     {
-        $whereSql = " WHERE a.room_id = $roomnum and a.uid=b.uid ";
+        $whereSql = " WHERE a.room_id = $roomnum and a.uin=b.uin ";
 
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))
@@ -176,7 +176,7 @@ class ClassMember
         }
         try
         {
-            $sql = 'select a.uid as uid,b.role as role from  t_class_member as a,t_account as b ' . $whereSql . ' LIMIT ' . (int)$offset . ',' . (int)$limit;
+            $sql = 'select b.uid as uid,b.role as role from  t_class_member as a,t_account as b ' . $whereSql . ' LIMIT ' . (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
             if(!$stmt)
             {
@@ -234,10 +234,10 @@ class ClassMember
     }
 
     /* 功能：更新成员心跳时间
-     * 说明：更新用户（uid）的心跳时间（time)
+     * 说明：更新用户（uin）的心跳时间（time)
      *      成功返回1，失败返回-1
      */
-    static public function updateLastHeartBeatTime($uid,$room_id,$time)
+    static public function updateLastHeartBeatTime($uin,$room_id,$time)
     {
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))
@@ -246,9 +246,9 @@ class ClassMember
         }
         try
         {
-            $sql = 'UPDATE t_class_member SET last_heartbeat_time=:last_heartbeat_time WHERE uid = :uid and room_id = :room_id';
+            $sql = 'UPDATE t_class_member SET last_heartbeat_time=:last_heartbeat_time WHERE uin = :uin and room_id = :room_id';
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':uid', $uid, PDO::PARAM_STR);
+            $stmt->bindParam(':uin', $uin, PDO::PARAM_INT);
             $stmt->bindParam(':room_id', $room_id, PDO::PARAM_STR);
             $stmt->bindParam(':last_heartbeat_time', $time, PDO::PARAM_INT);
             $result = $stmt->execute();

@@ -49,7 +49,7 @@ class ReportRoomMemberCmd extends TokenCmd
         }
 
         $this->operate = $this->req['operate'];
-        $this->classMember = new ClassMember($this->user, $this->req['roomnum']);
+        $this->classMember = new ClassMember($this->uin, $this->req['roomnum']);
         return new CmdResp(ERR_SUCCESS, '');
     }
 

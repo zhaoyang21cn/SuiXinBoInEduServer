@@ -28,6 +28,7 @@ USE `sxb_edu_db`;
 --
 
 CREATE TABLE IF NOT EXISTS `t_account` (
+ `uin` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户id,后台维护和使用',
  `uid`                varchar(50)   NOT  NULL COMMENT '用户名',          
  `appid` int(11) NOT NULL DEFAULT 0 COMMENT 'appid',
  `role`              tinyint(1)    NOT  NULL DEFAULT  0   COMMENT '角色,0:学生,1:老师',   
@@ -39,8 +40,9 @@ CREATE TABLE IF NOT EXISTS `t_account` (
  `logout_time`        int(11)       NOT  NULL DEFAULT  0   COMMENT '退出时间戳',           
  `last_request_time`  int(11)       NOT  NULL DEFAULT  0   COMMENT '最新请求时间戳',
     
-  PRIMARY KEY (`uid`)
-);
+  PRIMARY KEY (`uin`),
+  UNIQUE KEY `idx_uid` (`uid`)
+)ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表' AUTO_INCREMENT=10001;
 
 
 -- --------------------------------------------------------
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `t_account` (
 -- 课程表的结构 `t_course`
 
 CREATE TABLE IF NOT EXISTS `t_course` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '课程ID',
+  `room_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '课程ID',
   `create_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '创建时间戳',
   `start_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '上课时间戳',
   `end_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时间戳',
@@ -57,11 +59,12 @@ CREATE TABLE IF NOT EXISTS `t_course` (
   `appid` int(11) NOT NULL DEFAULT 0 COMMENT 'appid',
   `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
   `cover` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '封面URL',
-  `host_uid` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '老师UID',
+  `host_uin` int(11) NOT NULL DEFAULT 0 COMMENT '老师UIN',
   `state` int(11)      NOT  NULL DEFAULT  0 COMMENT '课程状态,0-created,已创建未上课,1-living,正在上课中,2-has_lived,已下课但不能回放,3-can_playback,可以回放',
   `im_group_id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'im群组号',
   `playback_idx_url` text COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '播放索引文件地址',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`room_id`),
+  KEY `idx_host_uin` (`host_uin`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='课程表' AUTO_INCREMENT=10001 ;
 
 -- --------------------------------------------------------
@@ -71,10 +74,10 @@ CREATE TABLE IF NOT EXISTS `t_course` (
 --
 
 CREATE TABLE IF NOT EXISTS `t_class_member` (
- `uid`          varchar(50)  NOT  NULL  COMMENT '成员id',          
+ `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '成员id',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '成员所在房间ID',            
  `last_heartbeat_time`  int(11)      NOT  NULL DEFAULT  0   COMMENT '成员心跳时间戳',           
-  PRIMARY KEY (`uid`,`room_id`)
+  PRIMARY KEY (`uin`,`room_id`)
 );
 
 -- --------------------------------------------------------
@@ -86,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `t_class_member` (
 
 CREATE TABLE IF NOT EXISTS `t_video_record` (
  `id`           int(11)       NOT  NULL   AUTO_INCREMENT  COMMENT 'id',
- `uid`          varchar(50)   NOT  NULL   DEFAULT ''  COMMENT '视频的拥有者',
+ `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '视频的拥有者',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
  `video_id`     varchar(50)   NOT  NULL   DEFAULT ''  COMMENT '视频id',                            
  `play_url`     varchar(128)  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
@@ -106,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `t_video_record` (
 
 CREATE TABLE IF NOT EXISTS `t_bind_file` (
  `id`           int(11)       NOT  NULL   AUTO_INCREMENT  COMMENT 'id',
- `uid`          varchar(50)   NOT  NULL   DEFAULT ''  COMMENT '视频的拥有者',
+ `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '资源的拥有者',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
  `type`   int(11)      NOT  NULL DEFAULT  0  COMMENT '0:课件,1:播片',
  `file_name`   int(11)      NOT  NULL DEFAULT  0  COMMENT '文件名',

@@ -11,7 +11,8 @@ abstract class TokenCmd
 {
 
     protected $req;
-    protected $user;
+    protected $uin;
+    protected $userName;
     protected $appID;
 
     private function loadJsonReq()
@@ -103,7 +104,8 @@ abstract class TokenCmd
             return new CmdResp($ret, $errorMsg);
         }
 
-        $this->user = $account->getUser();
+        $this->uin = $account->getUin();
+        $this->userName = $account->getUser();
 
         $resp = $this->parseInput();
 

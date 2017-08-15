@@ -8,6 +8,9 @@ require_once LIB_PATH . '/db/DB.php';
 
 class Account
 {
+    // 用户ID => int
+    private $uin;
+
     // 用户名 => string
     private $uid;
 
@@ -40,6 +43,7 @@ class Account
     
     public function __Construct()
     {
+        $this->uin=0;
         $this->uid = '';
         $this->appID=0;
         $this->role=0;
@@ -50,6 +54,16 @@ class Account
         $this->loginTime = 0;
         $this->logoutTime = 0;
         $this->lastRequestTime = 0;
+    }
+
+    public function getUin()
+    {
+        return $this->uin;
+    }
+    
+    public function setUin($uin)
+    {
+        $this->uin = $uin;
     }
     
     public function getUser()
@@ -187,6 +201,8 @@ class Account
                 $error_msg = 'User not exist';
                 return ERR_USER_NOT_EXIST;
             }
+
+            $this->uin= $row['uin'];
             $this->appID= $row['appid'];
             $this->role= $row['role'];
             $this->pwd= $row['pwd'];
@@ -245,6 +261,7 @@ class Account
             }
 
             $row = $stmt->fetch();
+            $this->uin= $row['uin'];
             $this->uid= $row['uid'];
             $this->appID= $row['appid'];
             $this->role= $row['role'];
@@ -514,7 +531,9 @@ class Account
             {
                 $error_msg = 'Server inner error, Regist fail!';
                 return ERR_SERVER;
-            }         
+            }
+            
+            $this->uin=$dbh->lastInsertId(); 
         }
         catch (PDOException $e)
         {
@@ -540,13 +559,13 @@ class Account
         }
         try
         {
-            $sql = 'UPDATE t_account SET token=:token, user_sig=:userSig,  login_time=:loginTime, last_request_time=:lastRequestTime WHERE uid=:uid';
+            $sql = 'UPDATE t_account SET token=:token, user_sig=:userSig,  login_time=:loginTime, last_request_time=:lastRequestTime,logout_time=0 WHERE uin=:uin';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':lastRequestTime', $this->loginTime, PDO::PARAM_INT);
             $stmt->bindParam(':loginTime', $this->loginTime, PDO::PARAM_INT);
             $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
             $stmt->bindParam(':userSig', $this->userSig, PDO::PARAM_STR);
-            $stmt->bindParam(':uid', $this->uid, PDO::PARAM_STR);
+            $stmt->bindParam(':uin', $this->uin, PDO::PARAM_INT);
             
             $result = $stmt->execute();
             if (!$result)

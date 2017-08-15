@@ -40,7 +40,7 @@ class HeartBeatCmd extends TokenCmd
     {
         $errorMsg = '';
         //更新房间成员心跳
-        $ret = ClassMember::updateLastHeartBeatTime($this->user,$this->roomnum,$this->curTime);
+        $ret = ClassMember::updateLastHeartBeatTime($this->uin,$this->roomnum,$this->curTime);
         if ($ret<=0) {
             return new CmdResp(ERR_SERVER, 'Server error: update member heartbeat time fail');
         }
