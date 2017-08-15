@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `t_course` (
 CREATE TABLE IF NOT EXISTS `t_class_member` (
  `uid`          varchar(50)  NOT  NULL  COMMENT '成员id',          
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '成员所在房间ID',            
- `modify_time`  int(11)      NOT  NULL DEFAULT  0   COMMENT '成员心跳时间戳',           
+ `last_heartbeat_time`  int(11)      NOT  NULL DEFAULT  0   COMMENT '成员心跳时间戳',           
   PRIMARY KEY (`uid`,`room_id`)
 );
 

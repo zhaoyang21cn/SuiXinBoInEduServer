@@ -58,14 +58,14 @@ class Course
 
     /**
      * 创建 创建课程
-     * @return int      成功：true, 出错：false
+     * @return int      成功：返回课程号, 出错  <=0：
      */
     public function create()
     {
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))
         {
-            return false;
+            return -1;
         }
         try
         {
@@ -79,18 +79,18 @@ class Course
             $result = $stmt->execute();
             if (!$result)
             {
-                return false;
+                return -1;
             }
 
             $this->id = $dbh->lastInsertId();
             
-            return true;
+            return $this->id;
         }
         catch (PDOException $e)
         {
-            return false;
+            return -1;
         }
-        return false;
+        return -1;
     }
 
 
@@ -103,7 +103,7 @@ class Course
         $list = array();
         if (is_null($dbh))
         {
-            return null;
+            return -1;
         }
         $fields = array(
             self::FIELD_ID,

@@ -52,7 +52,7 @@ class CreateLiveRoomCmd extends TokenCmd
     {
         // 每次请求都创建一个新的房间出来
         $ret = $this->course->create();
-        if (!$ret)
+        if ($ret<=0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: create room fail');
         }
@@ -64,7 +64,7 @@ class CreateLiveRoomCmd extends TokenCmd
         $data = array();
         $data[course::FIELD_IM_GROUP_ID] = strval($id);
         $ret = $this->course->update($id,$data); 
-        if (!$ret)
+        if ($ret<=0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }
