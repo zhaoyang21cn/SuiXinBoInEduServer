@@ -243,7 +243,8 @@ class ClassMember
             {
                 return -1;
             }
-            return 1;
+            $count = $stmt->rowCount();
+            return $count;
         }
         catch (PDOException $e)
         {
