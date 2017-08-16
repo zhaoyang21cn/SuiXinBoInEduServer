@@ -59,6 +59,14 @@ class CosGetSignCmd extends TokenCmd
         Cosapi::setRegion(GLOBAL_CONFIG_COS_REGION);       
 
         $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
-        return new CmdResp(ERR_SUCCESS, '', array('sign' => $sign));
+        
+        $data = array(
+             'sig' => $sign,
+            'bucket' => GLOBAL_CONFIG_COS_BUCKET,
+            'appid' => intval(GLOBAL_CONFIG_APP_ID),
+            'region' => GLOBAL_CONFIG_COS_REGION,
+            'preview_tag' => GLOBAL_CONFIG_COS_PREVIEW_TAG,
+        );
+        return new CmdResp(ERR_SUCCESS, '', $data);
     }
 }
