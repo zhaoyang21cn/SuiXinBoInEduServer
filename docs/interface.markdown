@@ -28,6 +28,7 @@
 * 课件/播片源关联上报
 * 查询已关联的课件/播片
 * 请求cos签名
+* 请求vod签名
 * 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 * 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
 * 录制开始回调
@@ -664,7 +665,6 @@ index.php?svc=vod&cmd=get_sign
 ```json
  {
     "token":"[token]",
-    "SignatureMethod" : "HmacSHA256",
     "method":"GET",
     "host":"cvm.api.qcloud.com", 
     "path":"/v2/index.php",
@@ -685,11 +685,10 @@ index.php?svc=vod&cmd=get_sign
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-SignatureMethod|String|必填|签名加密方式,HmacSHA256和HmacSHA1.同[params].SignatureMethod
 method|String|必填|POST 和 GET 方式, 这里使用 GET 请求, 注意方法为全大写
 host|String|必填|请求主机.实际的请求域名根据接口所属模块的不同而不同, 详见各接口说明
 path|String|必填|云API的请求路径目前固定为/v2/index.php.详见各接口说明
-params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口说明.因为还不知道SecretId所以SecretId为空
+params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口说明.因为还不知道SecretId所以SecretId为空.必须有SignatureMethod
 
 * response字段示例
 
@@ -699,6 +698,7 @@ params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口�
     "data":{
       "sign": "[sig]",
       "SecretId" : "[SecretId]",
+      "SignatureMethod" : "HmacSHA256",
     }
  }
 
@@ -707,7 +707,7 @@ params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口�
 :-----: | :-----: | :-----: | :-----: 
 sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
 SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
-
+SignatureMethod|String|必填|签名加密方式,HmacSHA256和HmacSHA1.客户端可以用来校对.
 
 ### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 ### 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
