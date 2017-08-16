@@ -9,7 +9,7 @@
     const USER = 'your-user-name';
     const PASSWORD = 'your-pass-word';
     // DB NAME
-    const DATABASE = 'sxb_db';
+    const DATABASE = 'sxb_edu_db';
     const CHARSET = 'utf8mb4';
 }
 ?>

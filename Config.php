@@ -13,7 +13,7 @@ define('GLOBAL_CONFIG_SECRET_KEY', 'Your_SECRET_KEY'); //SECRET_KEY
 define('GLOBAL_CONFIG_COS_BUCKET', 'Your_COS_BUCKET'); //bucket
 define('GLOBAL_CONFIG_COS_REGION', 'Your_COS_REGION'); //设置COS所在的区域 华南  -> gz;华东  -> sh;华北  -> tj
 define('GLOBAL_CONFIG_COS_SIG_EXPIRATION',2592000 ); //签名有效期,单位:秒,默认值30*24*3600
-
+define('GLOBAL_CONFIG_COS_PREVIEW_TAG','preview' ); //文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中的[preview_tag]号部分
 
 define('AUTHORIZATION_KEY', serialize([
     'Your_SDK_APP_ID' => 'Your_Authrization_Key'
