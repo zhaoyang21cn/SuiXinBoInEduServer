@@ -68,7 +68,7 @@ class CosGetSignCmd extends TokenCmd
         }
         
         $data = array(
-             'sig' => $sign,
+            'sign' => $sign,
             'bucket' => GLOBAL_CONFIG_COS_BUCKET,
             'appid' => intval(GLOBAL_CONFIG_APP_ID),
             'region' => GLOBAL_CONFIG_COS_REGION,

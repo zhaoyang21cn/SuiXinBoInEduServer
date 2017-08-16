@@ -688,7 +688,7 @@ token|String|必填|用户token
 method|String|必填|POST 和 GET 方式, 这里使用 GET 请求, 注意方法为全大写
 host|String|必填|请求主机.实际的请求域名根据接口所属模块的不同而不同, 详见各接口说明
 path|String|必填|云API的请求路径目前固定为/v2/index.php.详见各接口说明
-params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口说明.因为还不知道SecretId所以SecretId为空.必须有SignatureMethod
+params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口说明.因为还不知道SecretId所以SecretId为空.SignatureMethod取值HmacSHA1和HmacSHA256
 
 * response字段示例
 

@@ -54,6 +54,9 @@ class Router
         'cos' => array(
             'get_sign' => 'CosGetSignCmd',
         ),
+        'vod' => array(
+            'get_sign' => 'VodGetSignCmd',
+        ),
         'test' => array(
             'test' => 'TestCmd',
         ),
