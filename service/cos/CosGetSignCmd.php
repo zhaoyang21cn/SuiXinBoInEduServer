@@ -57,8 +57,15 @@ class CosGetSignCmd extends TokenCmd
     {
         Cosapi::setTimeout(300);
         Cosapi::setRegion(GLOBAL_CONFIG_COS_REGION);       
-
-        $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
+        
+        if($this->type==self::TYPE_NOREUSABLE)
+        {
+            $sign = Auth::createNonreusableSignature(GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
+        }
+        else
+        {
+            $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
+        }
         
         $data = array(
              'sig' => $sign,
