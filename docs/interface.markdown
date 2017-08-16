@@ -648,7 +648,7 @@ sign|String|必填|生成的签名
 bucket|String|必填|当前使用的bucket
 appid|Interger|必填|厂商appid,注意不是sdkappid
 region|String|必填|bucket区域信息,参见官网说明
-preview_tag|String|必填|文档预览域名[bucket]-[appid].*.myqcloud.com中的*号部分
+preview_tag|String|必填|文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中使用
 
 
 ### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
