@@ -60,7 +60,7 @@ data|Object|可选|返回数据内容
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 timeStamp|Integer|必填|时间戳(和音视频数据包中的时间戳一样:当前时间的毫秒低32位)
-appid|Integer|必填|要使用的AppID
+appid|Integer|必填|要使用的SdkAppID
 
 错误码
 
@@ -649,6 +649,64 @@ bucket|String|必填|当前使用的bucket
 appid|Interger|必填|厂商appid,注意不是sdkappid
 region|String|必填|bucket区域信息,参见官网说明
 preview_tag|String|必填|文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中使用
+
+### 请求vod签名
+
+* 参考:https://www.qcloud.com/document/api/377/4214
+* 请求URL
+
+```php
+index.php?svc=vod&cmd=get_sign
+```
+
+* request字段示例
+
+```json
+ {
+    "token":"[token]",
+    "SignatureMethod" : "HmacSHA256",
+    "method":"GET",
+    "host":"cvm.api.qcloud.com", 
+    "path":"/v2/index.php",
+    "params": {
+           "Action" : "DescribeInstances",
+           "Nonce" : 11886,
+           "Region" : "gz",
+           "SecretId" : "",
+           "SignatureMethod" : "HmacSHA256",
+           "Timestamp" : 1465185768,
+           "instanceIds.0" : "ins-09dx96dg",
+           "limit" : 20,
+           "offset" : 0,
+    }
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+SignatureMethod|String|必填|签名加密方式,HmacSHA256和HmacSHA1.同[params].SignatureMethod
+method|String|必填|POST 和 GET 方式, 这里使用 GET 请求, 注意方法为全大写
+host|String|必填|请求主机.实际的请求域名根据接口所属模块的不同而不同, 详见各接口说明
+path|String|必填|云API的请求路径目前固定为/v2/index.php.详见各接口说明
+params|Object|必填|调腾讯云vod接口的请求参数列表.详见各接口说明.因为还不知道SecretId所以SecretId为空
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+    "errorInfo": "",
+    "data":{
+      "sign": "[sig]",
+      "SecretId" : "[SecretId]",
+    }
+ }
+
+```
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
+SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
 
 
 ### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
