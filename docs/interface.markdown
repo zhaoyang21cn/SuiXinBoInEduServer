@@ -27,6 +27,7 @@
 * 拉取房间成员列表
 * 课件/播片源关联上报
 * 查询已关联的课件/播片
+* 请求cos签名
 * 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 * 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
 * 录制开始回调
@@ -599,6 +600,47 @@ bind_file信息
 type|int|必填|资源类型,0:课件,1:播片
 file_name|String|必填|文件名
 url|String|必填|资源对应的url
+
+### 请求cos签名
+
+* 参考:https://www.qcloud.com/document/product/436/6054
+* 参考:https://www.qcloud.com/document/product/436/6274
+* 请求URL
+
+```php
+index.php?svc=cos&cmd=get_sign
+```
+
+* request字段示例
+
+```json
+ { 
+   "type":0,
+   "roomnum": 10001,
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+type|Integer|必填|签名类型. 0:多次,1:单次
+file_path|String|可选|文件路径,斜杠开头,为文件在此 bucket下的全路径.当单次签名时,此字段为必填字段.
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+    "errorInfo": "",
+    "data":{
+      "sign": "[sig]",
+      "bucket": "[bucket]"
+    }
+ }
+
+```
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+sign|String|必填|生成的签名
+bucket|String|必填|当前使用的bucket
 
 ### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
 ### 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
