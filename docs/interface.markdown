@@ -648,7 +648,7 @@ file_path|String|可选|文件路径,斜杠开头,为文件在此 bucket下的�
 :-----: | :-----: | :-----: | :-----: 
 sign|String|必填|生成的签名
 bucket|String|必填|当前使用的bucket
-region|String|必填|bucket区域信息,参见官网说明
+region|String|必填|bucket区域信息,参见官网说明.对于请求里带bucket的,此字段为空
 preview_tag|String|必填|文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中使用
 
 ### 请求vod签名

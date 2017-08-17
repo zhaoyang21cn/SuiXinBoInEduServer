@@ -80,10 +80,16 @@ class CosGetSignCmd extends TokenCmd
             $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,$this->bucket, $this->filePath);
         }
         
+        //因为regin和bucket相关.如果是客户端主动提供bucket的,则region为空.
+        $regin="";
+        if($this->bucket == GLOBAL_CONFIG_COS_BUCKET)
+        {
+            $regin=GLOBAL_CONFIG_COS_REGION;
+        }
         $data = array(
             'sign' => $sign,
             'bucket' => $this->bucket,
-            'region' => GLOBAL_CONFIG_COS_REGION,
+            'region' => $regin,
             'preview_tag' => GLOBAL_CONFIG_COS_PREVIEW_TAG,
         );
         return new CmdResp(ERR_SUCCESS, '', $data);
