@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS `t_course` (
   `start_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '上课时间戳',
   `end_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时间戳',
   `last_update_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '心跳时间戳',                       
-  `appid` int(11) NOT NULL DEFAULT 0 COMMENT 'appid',
   `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
   `cover` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '封面URL',
   `host_uin` int(11) NOT NULL DEFAULT 0 COMMENT '老师UIN',

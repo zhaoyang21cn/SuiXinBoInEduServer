@@ -327,8 +327,8 @@ index.php?svc=live&cmd=roomlist
 	"size":10,
 	"from_time":1412345678,
 	"to_time":1412346678
-	"uid":"teacher",
-	"state":"living"
+	"host_uid":"teacher",
+	"state":0
  }
 ```
 
@@ -339,17 +339,17 @@ index|Integer|必填|起始房间位置(从0开始)
 size|Integer|必填|列表长度
 from_time|Integer|选填|搜索开始时间戳(1970年1月1日以来的秒数)
 to_time|Integer|选填|搜索结束时间戳(1970年1月1日以来的秒数)
-uid|String|选填|要搜索的老师id. 没有这个字段表示搜索所有老师的
-state|String|选填|要拉取的课程的状态. 没有这个字段表示全部状态
+host_uid|String|选填|要搜索的老师id. 没有这个字段表示搜索所有老师的
+state|Interger|选填|要拉取的课程的状态. 没有这个字段表示全部状态
 
 课程state取值
 
 state取值 | 描述
 :-----: | :-----: 
-created|已创建未上课
-living|正在上课中
-has_lived|已下课但不能回放
-can_playback|可以回放
+0|已创建未上课
+1|正在上课中
+2|已下课但不能回放
+3|可以回放
 
 
 * response字段示例
@@ -360,26 +360,26 @@ can_playback|可以回放
 	"data":{
 	"total":100,
  	"rooms":[{
-		         "uid":"[uid]",
+		     "host_uid":"[uid]",
           	 "title": "标题",
              "roomnum":18,
-             "state":"can_playback",
+             "state":3,
              "groupid":"18",
              "cover":"http://cover.png",
              "memsize":23,
-             "playback_indx_url":"http://xxxxx",
+             "playback_idx_url":"http://xxxxx",
              "begin_time":145668974,
              "end_time":145668974
         },
         {
-		        "uid":"[uid]",
+		    "host_uid":"[uid]",
             "title": "标题",
             "roomnum":19,
-            "state":"living",
+            "state":0,
             "groupid":"19",
             "cover":"http://cover.png",
             "memsize":23,
-            "playback_indx_url":"",
+            "playback_idx_url":"",
             "begin_time":145668974,
             "end_time":145668974    
         }
@@ -396,14 +396,14 @@ rooms|Array|必填|房间信息数组
 
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----:
-uid|String|必填|老师id 
+host_uid|String|必填|老师id 
 title|String| 选填|标题
 state|String|必填|课程状态
 roomnum|Integer|必填|房间id
 groupid|String|必填|群组id
 cover|String| 选填|封面地址
 memsize|Integer|必填|课程参与人数
-playback_indx_url|String| 选填|回放索引文件地址
+playback_idx_url|String| 选填|回放索引文件地址
 begin_time|Integer|必填|课程开始时间
 end_time|Integer|必填|课程结束时间
 

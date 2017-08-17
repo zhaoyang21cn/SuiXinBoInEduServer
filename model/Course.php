@@ -12,13 +12,24 @@ class Course
     const FIELD_START_TIME = 'start_time';
     const FIELD_END_TIME = 'end_time';
     const FIELD_LAST_UPDATE_TIME = 'last_update_time';
-    const FIELD_APPID = 'appid';
     const FIELD_TITLE = 'title';
     const FIELD_COVER = 'cover';
     const FIELD_HOST_UIN = 'host_uin';
     const FIELD_STATE = 'state';
     const FIELD_IM_GROUP_ID = 'im_group_id';
     const FIELD_PLAYBACK_IDX_URL = 'playback_idx_url'; 
+    
+    //课程state取值
+    const COURSE_STATE_INVALID=-1; //非法课程状态,不可能出现
+    const COURSE_STATE_CREATED=0; //已创建未上课
+    const COURSE_STATE_LIVING=1; //正在上课中
+    const COURSE_STATE_HAS_LIVED=2; //已下课但不能回放
+    const COURSE_STATE_CAN_PLAYBACK=3;//可以回放
+    
+    //用来调试mysql
+    public $errorCode;
+    public $errorInfo;
+    ///////////////////////////////    
 
     // 课程ID => int
     private $room_id = 0;
@@ -34,9 +45,6 @@ class Course
 
     // 上次心跳时间 => int
     private $lastUpdateTime=0;
-
-    // appid => int
-    private $appid = 0;
 
     // 直播标题 => sring
     private $title = '';
@@ -69,11 +77,10 @@ class Course
         }
         try
         {
-            $sql = 'INSERT INTO t_course (host_uin, create_time,appid,title,cover,state) VALUES (:host_uin, :create_time,:appid,:title,:cover,0)';
+            $sql = 'INSERT INTO t_course (host_uin, create_time,title,cover,state) VALUES (:host_uin, :create_time,:title,:cover,0)';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':host_uin', $this->hostUin, PDO::PARAM_INT);
             $stmt->bindParam(':create_time', date('U'), PDO::PARAM_INT);
-            $stmt->bindParam(':appid',$this->appid, PDO::PARAM_INT);
             $stmt->bindParam(':title',$this->title, PDO::PARAM_STR);
             $stmt->bindParam(':cover',$this->cover, PDO::PARAM_STR);
             $result = $stmt->execute();
@@ -160,8 +167,6 @@ class Course
             $this->endTime = $fields[self::FIELD_END_TIME];
          if(array_key_exists(self::FIELD_LAST_UPDATE_TIME, $fields))
             $this->lastUpdateTime = $fields[self::FIELD_LAST_UPDATE_TIME];
-         if(array_key_exists(self::FIELD_APPID, $fields))
-            $this->appid = $fields[self::FIELD_APPID];
          if(array_key_exists(self::FIELD_TITLE, $fields))
             $this->title = $fields[self::FIELD_TITLE];
          if(array_key_exists(self::FIELD_COVER, $fields))
@@ -192,7 +197,6 @@ class Course
             self::FIELD_START_TIME => $this->startTime,
             self::FIELD_END_TIME => $this->endTime,
             self::FIELD_LAST_UPDATE_TIME => $this->lastUpdateTime,
-            self::FIELD_APPID => $this->appid,
             self::FIELD_TITLE => $this->title,
             self::FIELD_COVER => $this->cover,
             self::FIELD_HOST_UIN => $this->hostUin, 
@@ -260,6 +264,95 @@ class Course
             return -1;
         }
     }
+    /* 功能：查询课程列表
+     * @param appid:
+     * @param uin: 要搜索的老师,为0表示全部老师
+     * @param state:要拉取的课程的状态,COURSE_STATE_INVALID(-1)表示所有状态
+     * @param fromTime:搜索开始UTC
+     * @param toTime:搜索结束UTC
+     * @param offset:起始房间位置(从0开始)
+     * @param limit:要拉取的列表长度
+     * @param & return totalCount:符合条件的记录总条数.带给调用者
+     * 说明：成功返回列表,同时顺便带回总记录条数，失败返回null
+     */
+    public static function getCourseList($appid,$uin,$state,$fromTime,$toTime,$offset,$limit,&$totalCount)
+    {
+        //t_course => b,t_acount => a
+        $whereSql=" where a.appid=$appid and a.uin=b.host_uin ";
+        if($state != self::COURSE_STATE_INVALID)
+        {
+            $whereSql.=" and state=$state";
+        }
+        if($fromTime>0)
+        {
+            $whereSql.=" and start_time>$fromTime";
+        }
+        if($toTime>0)
+        {
+            $whereSql.=" and start_time<=$toTime";
+        }
+        
+        //记录从数据库取到的记录
+        $rows = array();
+
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            return null;
+        }
+
+        try
+        {
+            $sql = "SELECT COUNT(b.room_id) as total FROM t_course as b,t_account as a $whereSql";
+            $stmt = $dbh->prepare($sql);
+            $result = $stmt->execute();
+            if (!$result)
+            {
+                $this->errorCode=$stmt->errorCode();
+                $this->errorInfo=$stmt->errorInfo();
+                return null;
+            }
+            $totalCount=$stmt->fetch()['total'];
+
+            $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,b.cover as cover,b.playback_idx_url as playback_idx_url,b.start_time as start_time,b.end_time as end_time '.
+                   ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time,b.create_time DESC LIMIT ' .
+                   (int)$offset . ',' . (int)$limit;
+            $stmt = $dbh->prepare($sql);
+            $result = $stmt->execute();
+            if (!$result)
+            {
+                return null;
+            }
+            $rows = $stmt->fetchAll();
+            if (empty($rows))
+            {
+                return array();
+            }
+        }
+        catch (PDOException $e)
+        {
+            return null;
+        }
+        
+        //函数返回的数组
+        $data = array();
+        foreach ($rows as $row)
+        {
+            $data[] = array(
+                'uid' => $row['uid'],
+                'title' => $row['title'],
+                'roomnum' => (int)$row['room_id'],
+                'state' => (int)$row['state'],
+                'groupid' => $row['im_group_id'],
+                'cover' => $row['cover'],
+                'playback_idx_url' => $row['playback_idx_url'],
+                'begin_time' => (int)$row['start_time'],
+                'end_time' => (int)$row['end_time'],
+             );
+        }
+        return $data;
+    }
+
 
     /* 功能：获取字段类型
      */
@@ -335,16 +428,6 @@ class Course
     public function setLastUpdateTime($lastUpdateTime)
     {
         $this->lastUpdateTime = $lastUpdateTime;
-    }
-
-    public function getAppid()
-    {
-        return $this->appid;
-    }
-
-    public function setAppid($appid)
-    {
-        $this->appid = $appid;
     }
 
     public function getTitle()

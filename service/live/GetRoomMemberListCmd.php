@@ -62,7 +62,7 @@ class GetRoomMemberListCmd extends TokenCmd
         foreach ($recordList as $record) {
             $rspRecordList[] = array(
                 'id' => $record['uid'],
-                'role' => $record['role']);
+                'role' => (int)$record['role']);
         }
 
         //获取房间成员总数
@@ -71,7 +71,7 @@ class GetRoomMemberListCmd extends TokenCmd
             return new CmdResp(ERR_SERVER, 'Server internal error');
         }
         $data = array(
-            'total' => $totalCount,
+            'total' => (int)$totalCount,
             'idlist' => $rspRecordList,
         );
         return new CmdResp(ERR_SUCCESS, '', $data);
