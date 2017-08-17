@@ -618,7 +618,8 @@ index.php?svc=cos&cmd=get_sign
  {
    "token":"[token]",
    "type":0,
-   "roomnum": 10001,
+   "bucket": "[bucket]",
+   "file_path": "/test"
  }
 ```
 
@@ -626,6 +627,7 @@ index.php?svc=cos&cmd=get_sign
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
 type|Integer|必填|签名类型. 0:多次,1:单次
+bucket|String|可选|指定bucket.如果不指定按照默认bucket
 file_path|String|可选|文件路径,斜杠开头,为文件在此 bucket下的全路径.当单次签名时,此字段为必填字段.
 
 * response字段示例
@@ -636,7 +638,6 @@ file_path|String|可选|文件路径,斜杠开头,为文件在此 bucket下的�
     "data":{
       "sign": "[sig]",
       "bucket": "[bucket]",
-      "appid": [appid],
       "region": "sh",
       "preview_tag": "preview",
     }
@@ -647,7 +648,6 @@ file_path|String|可选|文件路径,斜杠开头,为文件在此 bucket下的�
 :-----: | :-----: | :-----: | :-----: 
 sign|String|必填|生成的签名
 bucket|String|必填|当前使用的bucket
-appid|Interger|必填|厂商appid,注意不是sdkappid
 region|String|必填|bucket区域信息,参见官网说明
 preview_tag|String|必填|文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中使用
 

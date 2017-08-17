@@ -20,6 +20,7 @@ class CosGetSignCmd extends TokenCmd
     const TYPE_REUSABLE=0; //多次签名
     const TYPE_NOREUSABLE=1;  //单次签名
 
+    private $bucket; 
     private $filePath; //文件路径，以斜杠开头，例如 /filepath/filename，为文件在此 bucketname 下的全路径
     private $type; //0-多次签名 1-单次签名
 
@@ -33,6 +34,18 @@ class CosGetSignCmd extends TokenCmd
             return new CmdResp(ERR_REQ_DATA, 'invalid type');
         }
         $this->type=$this->req['type'];
+
+        if (isset($this->req['bucket']) && !is_string($this->req['bucket'])) {
+            return new CmdResp(ERR_REQ_DATA, 'invalid bucket');
+        }
+        if (isset($this->req['bucket']))
+        {
+            $this->bucket=$this->req['bucket'];
+        }
+        else
+        {
+             $this->bucket=GLOBAL_CONFIG_COS_BUCKET;
+        }
         
         if ($this->type==self::TYPE_NOREUSABLE && !isset($this->req['file_path'])) {
             return new CmdResp(ERR_REQ_DATA, 'Lack of file_path');
@@ -40,7 +53,7 @@ class CosGetSignCmd extends TokenCmd
         if (isset($this->req['file_path']) && !is_string($this->req['file_path'])) {
             return new CmdResp(ERR_REQ_DATA, 'invalid file_path');
         }
-        
+
         if (isset($this->req['file_path']))
         {
             $this->filePath=$this->req['file_path'];
@@ -60,17 +73,16 @@ class CosGetSignCmd extends TokenCmd
         
         if($this->type==self::TYPE_NOREUSABLE)
         {
-            $sign = Auth::createNonreusableSignature(GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
+            $sign = Auth::createNonreusableSignature($this->bucket, $this->filePath);
         }
         else
         {
-            $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,GLOBAL_CONFIG_COS_BUCKET, $this->filePath);
+            $sign = Auth::createReusableSignature(time()+GLOBAL_CONFIG_COS_SIG_EXPIRATION,$this->bucket, $this->filePath);
         }
         
         $data = array(
             'sign' => $sign,
-            'bucket' => GLOBAL_CONFIG_COS_BUCKET,
-            'appid' => intval(GLOBAL_CONFIG_APP_ID),
+            'bucket' => $this->bucket,
             'region' => GLOBAL_CONFIG_COS_REGION,
             'preview_tag' => GLOBAL_CONFIG_COS_PREVIEW_TAG,
         );
