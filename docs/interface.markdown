@@ -214,7 +214,7 @@ cover|String|可选|课程封面图片
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 roomnum|Integer|必填|房间id(服务器分配的唯一房间id)
-groupid|String|选填|IM群组id,客户端拿着这个id去创建IM群
+groupid|String|必填|(重要)IM群组id.客户端用此id去创建群,必须保证创建的群的groupid就是这个值. 否则,需要新加信令上报实际的groupid
 
 
 ### 开课

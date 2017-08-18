@@ -4,6 +4,7 @@
  * Tips：相比Cmd类，主要增加Token过期验证，并将用户token转换成用户名
  */
 
+require_once dirname(__FILE__) . '/../Config.php';
 require_once 'CmdResp.php';
 require_once MODEL_PATH . '/Account.php';
 
@@ -61,6 +62,13 @@ abstract class TokenCmd
         {
             return new CmdResp(ERR_REQ_DATA, 'Invalid appid');
         }
+        //校验appid是否已配置
+        $appIDValid = unserialize(GLOBAL_CONFIG_SDK_ADMIN);
+        if(!array_key_exists($this->req['appid'],$appIDValid))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid appid,maybe not config');
+        }
+
         $this->appID=$this->req['appid'];
 
         if (empty($this->req['timeStamp']))

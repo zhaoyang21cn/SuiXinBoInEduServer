@@ -1,5 +1,6 @@
 <?php
 
+require_once dirname(__FILE__) . '/../Config.php';
 require_once 'CmdResp.php';
 
 /**
@@ -61,6 +62,12 @@ abstract class Cmd
         if (!is_int($this->req['appid']))
         {
             return new CmdResp(ERR_REQ_DATA, 'Invalid appidid');
+        }
+        //校验appid是否已配置
+        $appIDValid = unserialize(GLOBAL_CONFIG_SDK_ADMIN);
+        if(!array_key_exists($this->req['appid'],$appIDValid))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid appid,maybe not config');
         }
         $this->appID=$this->req['appid'];
 
