@@ -16,6 +16,7 @@ abstract class TokenCmd
     protected $uin;
     protected $userName;
     protected $appID;
+    protected $timeStamp;
 
     private function loadJsonReq()
     {
@@ -79,6 +80,7 @@ abstract class TokenCmd
         {
             return new CmdResp(ERR_REQ_DATA, 'Invalid timeStamp');
         }
+        $this->timeStamp=$this->req['timeStamp'];
 
         if (empty($this->req['token'][0])) {
             return new CmdResp(ERR_REQ_DATA, 'Lack of token');

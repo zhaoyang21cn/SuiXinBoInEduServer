@@ -9,6 +9,7 @@ require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
 require_once MODEL_PATH . '/ClassMember.php';
 require_once DEPS_PATH . '/PhpServerSdk/TimRestApi.php';
+require_once LIB_PATH . '/im/im_group.php';
 
 class ReportRoomMemberCmd extends TokenCmd
 {
@@ -80,38 +81,16 @@ class ReportRoomMemberCmd extends TokenCmd
         //进入房间需要发im消息记录客户端相对时间
         if($this->operate == self::OPERATE_ENTER)
         {
-            $sdkappid=$this->appID;
-            $identifier = "admin";
-            $private_key_path = KEYS_PATH . '/' . $this->appID . '/private_key'; 
-            $signature = DEPS_PATH ."/PhpServerSdk/signature/linux-signature64";
-               
-            // 初始化API
-            $api = createRestAPI();
-            $api->init($sdkappid, $identifier);
-            
-            //set_user_sig可以设置已有的签名
-            //$api->set_user_sig($this->account->getUserSig());
-            //生成签名，有效期一天
-            $ret = $api->generate_user_sig($identifier, '86400', $private_key_path, $signature);
-            if ($ret == null)
+            $customMsg=array();
+            $customMsg["type"]=1003;
+            $customMsg["seq"]=rand(10000, 100000000);
+            $customMsg["timestamp"]=$this->timeStamp;
+            $customMsg["value"]=array('uid' =>$this->userName);
+            $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->roomNum,$customMsg);
+            if($ret<0)
             {
-                // 签名生成失败
-                return new CmdResp(ERR_SERVER, 'signature for im msg failed');
+                return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
             }
-            $msg_content = array();
-            //创建array 所需元素
-            //https://www.qcloud.com/document/product/269/2720
-            $msg_content_elem = array(
-                 'MsgType' => 'TIMCustomElem',       //文本类型
-                 'MsgContent' => array(
-                     'data' => "hello",
-                      )
-                 );
-            array_push($msg_content, $msg_content_elem);
-            $ret = $api->group_send_group_msg2($identifier,(string)$this->roomNum,$msg_content);
-            var_dump($ret);
-            var_dump($ret["ErrorCode"]);
-            var_dump($ret["MsgSeq"]);
         }
  
         return new CmdResp(ERR_SUCCESS, '');

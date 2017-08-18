@@ -35,10 +35,10 @@ class TimRestAPI extends TimRestInterface
 	 * @param string $identifier 用户名
 	 * @param string $usersig 用来鉴权的usersig
 	 * @param string $req_data 传递的json结构
-	 * $param bool $print_flag 是否打印请求，默认为打印
+	 * $param bool $print_flag 是否打印请求，默认为打印.......这里改成默认不打印.@随心播
 	 * @return string $out 返回的签名字符串
 	 */
-	public function api($service_name, $cmd_name, $identifier, $usersig, $req_data, $print_flag = true)
+	public function api($service_name, $cmd_name, $identifier, $usersig, $req_data, $print_flag = false)
 	{   
 		//$req_tmp用来做格式化输出
 		$req_tmp = json_decode($req_data, true);

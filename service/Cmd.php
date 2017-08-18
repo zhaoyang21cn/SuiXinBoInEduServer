@@ -11,6 +11,7 @@ abstract class Cmd
 
     protected $req;
     protected $appID;
+    protected $timeStamp;
 
     private function loadJsonReq()
     {
@@ -79,6 +80,7 @@ abstract class Cmd
         {
             return new CmdResp(ERR_REQ_DATA, 'Invalid timeStamp');
         }
+        $this->timeStamp=$this->req['timeStamp'];
 
         $resp = $this->parseInput();
         if (!$resp->isSuccess())
