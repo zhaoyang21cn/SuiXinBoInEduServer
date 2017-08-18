@@ -111,8 +111,8 @@ CREATE TABLE IF NOT EXISTS `t_bind_file` (
  `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '资源的拥有者',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
  `type`   int(11)      NOT  NULL DEFAULT  0  COMMENT '0:课件,1:播片',
- `file_name`   int(11)      NOT  NULL DEFAULT  0  COMMENT '文件名',
- `url`     varchar(128)  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
+ `file_name`   varchar(256)      NOT  NULL DEFAULT  0  COMMENT '文件名',
+ `url`     text  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
   PRIMARY KEY (`id`)
 )AUTO_INCREMENT=10001;
 

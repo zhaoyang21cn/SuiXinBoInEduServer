@@ -398,7 +398,7 @@ rooms|Array|必填|房间信息数组
 :-----: | :-----: | :-----: | :-----:
 host_uid|String|必填|老师id 
 title|String| 选填|标题
-state|String|必填|课程状态
+state|Interger|必填|课程状态
 roomnum|Integer|必填|房间id
 groupid|String|必填|群组id
 cover|String| 选填|封面地址
@@ -560,6 +560,8 @@ index.php?svc=live&cmd=querybind
 ```json
  {  "token":"[token]",
     "roomnum":18
+    "index":0
+    "size":50
  }
 ```
 
@@ -567,6 +569,8 @@ index.php?svc=live&cmd=querybind
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
 roomnum|int|必填|房间号
+index|Integer|必填|起始位置(从0开始)
+size|Integer|必填|列表长度
 
 * response字段示例
 

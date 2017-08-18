@@ -41,6 +41,10 @@ class Router
             'reportmemid' => 'ReportRoomMemberCmd',
             'roomidlist' => 'GetRoomMemberListCmd',
 
+            //播片/课件 关联
+            'reportbind' => 'ReportBindResourceCmd',
+            'querybind' => 'QueryBindResourceCmd',
+
             //推流旁路
             'livestreamlist' => 'GetLiveStreamListCmd',
             'getroomplayurl' => 'GetRoomPlayUrlCmd',
@@ -56,9 +60,6 @@ class Router
         ),
         'vod' => array(
             'get_sign' => 'VodGetSignCmd',
-        ),
-        'test' => array(
-            'test' => 'TestCmd',
         ),
     );
 
