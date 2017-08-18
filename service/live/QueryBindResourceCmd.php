@@ -1,16 +1,15 @@
 <?php
 /**
- * 房间成员列表接口
- * Date: 2016/11/17
+ * 播片/课件 关联列表查询
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 
 require_once SERVICE_PATH . '/TokenCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
-require_once MODEL_PATH . '/ClassMember.php';
+require_once MODEL_PATH . '/BindFile.php';
 
-class GetRoomMemberListCmd extends TokenCmd
+class QueryBindResourceCmd extends TokenCmd
 {
     private $roomnum;
     private $index;
@@ -53,26 +52,15 @@ class GetRoomMemberListCmd extends TokenCmd
 
     public function handle()
     {
-        //获取房间成员列表
-        $recordList = ClassMember::getList($this->roomnum, $this->index, $this->size);
+        //获取已经绑定的资源
+        $totalCount=0;
+        $recordList = BindFile::getList($this->roomnum,$this->uin,null,$this->index, $this->size,$totalCount);
         if (is_null($recordList)) {
-            return new CmdResp(ERR_SERVER, 'Server error: get member list fail');
-        }
-        $rspRecordList = array();
-        foreach ($recordList as $record) {
-            $rspRecordList[] = array(
-                'id' => $record['uid'],
-                'role' => (int)$record['role']);
-        }
-
-        //获取房间成员总数
-        $totalCount = ClassMember::getCount($this->roomnum);
-        if ($totalCount < 0) {
-            return new CmdResp(ERR_SERVER, 'Server internal error');
+            return new CmdResp(ERR_SERVER, 'Server error: get bind file list fail');
         }
         $data = array(
             'total' => (int)$totalCount,
-            'idlist' => $rspRecordList,
+            'bind_files' => $recordList,
         );
         return new CmdResp(ERR_SUCCESS, '', $data);
     }

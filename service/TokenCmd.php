@@ -11,6 +11,7 @@ abstract class TokenCmd
 {
 
     protected $req;
+    protected $account; //信令发起方的账户信息
     protected $uin;
     protected $userName;
     protected $appID;
@@ -78,19 +79,24 @@ abstract class TokenCmd
             return new CmdResp(ERR_REQ_DATA, ' Invalid token');
         }
 
-        $account = new Account();
-        $account->setToken($this->req['token']);
+        $this->account = new Account();
+        $this->account->setToken($this->req['token']);
         $errorMsg = '';
-        $ret = $account->getAccountRecordByToken($errorMsg);
+        $ret = $this->account->getAccountRecordByToken($errorMsg);
         if ($ret != ERR_SUCCESS) {
             return new CmdResp($ret, $errorMsg);
         }
+        //再次校验appid,保证各个信令带上来的appid一致
+        if($this->appID != $this->account->getAppID())
+        {
+            return new CmdResp(ERR_REQ_DATA, 'appid is diff from appid of the user.');
+        }
 
-        $lastRequestTime = $account->getLastRequestTime();
+        $lastRequestTime = $this->account->getLastRequestTime();
 
         $curr = date('U');
         if ($curr - $lastRequestTime > 7 * 24 * 60 * 60) {
-            $ret = $account->logout($errorMsg);
+            $ret = $this->account->logout($errorMsg);
             if ($ret != ERR_SUCCESS) {
                 return new CmdResp($ret, $errorMsg);
             }
@@ -98,14 +104,14 @@ abstract class TokenCmd
             return new CmdResp(ERR_TOKEN_EXPIRE, 'User token expired');
         }
 
-        $account->setLastRequestTime($lastRequestTime);
-        $ret = $account->updateLastRequestTime($errorMsg);
+        $this->account->setLastRequestTime($lastRequestTime);
+        $ret = $this->account->updateLastRequestTime($errorMsg);
         if ($ret != ERR_SUCCESS) {
             return new CmdResp($ret, $errorMsg);
         }
 
-        $this->uin = $account->getUin();
-        $this->userName = $account->getUser();
+        $this->uin = $this->account->getUin();
+        $this->userName = $this->account->getUser();
 
         $resp = $this->parseInput();
 

@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS `t_course` (
   `start_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '上课时间戳',
   `end_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时间戳',
   `last_update_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '心跳时间戳',                       
-  `appid` int(11) NOT NULL DEFAULT 0 COMMENT 'appid',
   `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
   `cover` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '封面URL',
   `host_uin` int(11) NOT NULL DEFAULT 0 COMMENT '老师UIN',
@@ -112,8 +111,8 @@ CREATE TABLE IF NOT EXISTS `t_bind_file` (
  `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '资源的拥有者',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
  `type`   int(11)      NOT  NULL DEFAULT  0  COMMENT '0:课件,1:播片',
- `file_name`   int(11)      NOT  NULL DEFAULT  0  COMMENT '文件名',
- `url`     varchar(128)  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
+ `file_name`   varchar(256)      NOT  NULL DEFAULT  0  COMMENT '文件名',
+ `url`     text  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
   PRIMARY KEY (`id`)
 )AUTO_INCREMENT=10001;
 

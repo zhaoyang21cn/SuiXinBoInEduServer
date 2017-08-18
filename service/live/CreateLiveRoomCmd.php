@@ -43,7 +43,6 @@ class CreateLiveRoomCmd extends TokenCmd
         }
 
         $this->course->setHostUin($this->uin);
-        $this->course->SetAppID($this->appID);
         
         return new CmdResp(ERR_SUCCESS, '');
     }
