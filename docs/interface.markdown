@@ -29,9 +29,7 @@
 * 查询已关联的课件/播片
 * 请求cos签名
 * 请求vod签名
-* 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
-* 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
-* 录制开始回调
+* 请求vod客户端上传签名
 * 录制结束回调接口
 * 索引文件生成完成回调接口
 
@@ -722,20 +720,43 @@ sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
 SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
 SignatureMethod|String|必填|签名加密方式,HmacSHA256和HmacSHA1.客户端可以用来校对.
 
-### 申请课件上传/下载/拉取已经上传课件列表 签名和url to-do
-### 申请播片上传/下载/拉取已经上传播片列表 签名和url to-do
+### 请求vod客户端上传签名
 
-
-### 录制开始回调
-
-* 接收旁路直播和录制相关服务器回调的通知
-
+* 参考:https://www.qcloud.com/document/product/266/9221
 * 请求URL
 
 ```php
-index.php?svc=live&cmd=recstartcall
+index.php?svc=vod&cmd=get_client_sign
 ```
-* 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
+
+* request字段示例
+
+```json
+ {
+    "token":"[token]"
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+    "errorInfo": "",
+    "data":{
+      "sign": "[sig]",
+      "SecretId" : "[SecretId]",
+    }
+ }
+
+```
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
+SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
 
 ### 录制结束回调接口
 
