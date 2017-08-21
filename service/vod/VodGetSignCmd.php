@@ -101,6 +101,7 @@ class VodGetSignCmd extends TokenCmd
         Log::info($readable_signature); 
         
         //生成签名串
+        //生成的签名串并不能直接作为请求参数，需要对其进行 URL 编码. url编码为调用方执行
         if($this->SignatureMethod==self::SIGNATURE_METHOD_SHA256)
         {
             $sign = base64_encode(hash_hmac('sha256', $readable_signature, GLOBAL_CONFIG_SECRET_KEY, true));

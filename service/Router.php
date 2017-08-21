@@ -23,6 +23,7 @@ class Router
             //房间
             'create' => 'CreateLiveRoomCmd',
             'reportroom' => 'ReportLiveRoomInfoCmd',
+            'startcourse' => 'StartCourseCmd',
             'roomlist' => 'GetLiveRoomListCmd',
             'exitroom' => 'ExitLiveRoomCmd',
 

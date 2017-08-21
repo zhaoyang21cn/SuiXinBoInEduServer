@@ -17,6 +17,8 @@ class GetLiveRoomListCmd extends TokenCmd
     private $index;
     //page列表长度 int
     private $size;
+    //课程号
+    private $roomNum;
     //搜索开始时间戳(1970年1月1日以来的秒数) int
     private $fromTime;
     //搜索结束时间戳(1970年1月1日以来的秒数)  int
@@ -30,6 +32,7 @@ class GetLiveRoomListCmd extends TokenCmd
     {
         $this->index = 0;
         $this->size=0;
+        $this->roomNum=0;
         $this->fromTime=0;
         $this->toTime=0;
         $this->hostUid="";
@@ -57,6 +60,15 @@ class GetLiveRoomListCmd extends TokenCmd
             return new CmdResp(ERR_REQ_DATA, 'Page size should be a positive integer(not larger than 50)');
         }
         $this->size = $this->req['size'];
+
+        if(isset($this->req['roomnum']) && !is_int($this->req['roomnum']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'roomnum invalid');
+        }
+        if(isset($this->req['roomnum']))
+        {
+            $this->roomNum=$this->req['roomnum'];
+        }
 
         if(isset($this->req['from_time']) && !is_int($this->req['from_time']))
         {
@@ -135,6 +147,7 @@ class GetLiveRoomListCmd extends TokenCmd
         $totalCount=0;
         $recordList = Course::getCourseList($this->appID,
                 $hostUin,
+                $this->roomNum,
                 $this->state,
                 $this->fromTime,
                 $this->toTime,

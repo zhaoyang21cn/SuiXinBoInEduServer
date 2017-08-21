@@ -47,7 +47,7 @@ class HeartBeatCmd extends TokenCmd
 
         //更新课程信息
         $data = array();
-        $data['last_update_time'] = $this->curTime;
+        $data[Course::FIELD_LAST_UPDATE_TIME] = $this->curTime;
         $ret = Course::update($this->roomnum, $data);
         if ($ret <= 0) {
             return new CmdResp(ERR_SERVER, 'Server error: update course heartbeat time fail');

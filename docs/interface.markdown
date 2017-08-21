@@ -339,6 +339,7 @@ index.php?svc=live&cmd=roomlist
 token|String|必填|用户token
 index|Integer|必填|起始房间位置(从0开始)
 size|Integer|必填|列表长度
+roomnum|Integer|选填|如果只需要查找某个具体的课程,请指定这个字段
 from_time|Integer|选填|搜索开始时间戳(1970年1月1日以来的秒数)
 to_time|Integer|选填|搜索结束时间戳(1970年1月1日以来的秒数)
 host_uid|String|选填|要搜索的老师id. 没有这个字段表示搜索所有老师的
@@ -364,26 +365,30 @@ state取值 | 描述
  	"rooms":[{
 		     "host_uid":"[uid]",
           	 "title": "标题",
-             "roomnum":18,
              "state":3,
+             "roomnum":18,
              "groupid":"18",
              "cover":"http://cover.png",
              "memsize":23,
              "playback_idx_url":"http://xxxxx",
              "begin_time":145668974,
-             "end_time":145668974
+             "begin_imseq":145,
+             "end_time":145668974,
+             "end_imseq":1456
         },
         {
 		    "host_uid":"[uid]",
             "title": "标题",
-            "roomnum":19,
             "state":0,
+            "roomnum":19,
             "groupid":"19",
             "cover":"http://cover.png",
             "memsize":23,
             "playback_idx_url":"",
             "begin_time":145668974,
-            "end_time":145668974    
+            "begin_imseq":145,
+            "end_time":145668974, 
+            "end_imseq":1456  
         }
     ]}
  }
@@ -407,7 +412,9 @@ cover|String| 选填|封面地址
 memsize|Integer|必填|课程参与人数
 playback_idx_url|String| 选填|回放索引文件地址
 begin_time|Integer|必填|课程开始时间
+begin_imseq|Integer|必填|课程开始时对应的im消息的seqno
 end_time|Integer|必填|课程结束时间
+end_imseq|Integer|必填|课程结束时时对应的im消息的seqno
 
 ### 上报房间成员变化(成员进出房间)
 

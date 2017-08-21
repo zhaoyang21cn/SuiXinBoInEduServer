@@ -72,6 +72,7 @@ class AccountLoginCmd extends Cmd
         }
         
         // 获取sig
+        //userSig过期时, 腾讯云会抛一个过期时间给客户端.客户端会触发用户下线,回到登录前状态
         $userSig = $account->getUserSig();
         if(empty($userSig))
         {

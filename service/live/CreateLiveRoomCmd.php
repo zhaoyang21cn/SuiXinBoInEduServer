@@ -9,6 +9,7 @@ require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
 require_once MODEL_PATH . '/Course.php';
 require_once MODEL_PATH . '/Account.php';
+require_once MODEL_PATH . '/ClassMember.php';
 
 require_once LIB_PATH . '/log/FileLogHandler.php';
 require_once LIB_PATH . '/log/Log.php';
@@ -59,9 +60,17 @@ class CreateLiveRoomCmd extends TokenCmd
         //房间id
         $room_id = $this->course->getRoomId();
         
+        //新创建的是全新的课程,清理掉课程表中的成员
+        ClassMember::ClearRoomByRoomNum($room_id);
+        
         //更新im群号.当前课程号和im群号值一样,类型不一样
         $data = array();
         $data[course::FIELD_IM_GROUP_ID] = strval($room_id);
+        $data[course::FIELD_STATE] = course::COURSE_STATE_CREATED;
+        $data[course::FIELD_START_TIME] = 0;
+        $data[course::FIELD_START_IMSEQ] = 0;
+        $data[course::FIELD_END_TIME] = 0;
+        $data[course::FIELD_LAST_UPDATE_TIME] = 0;
         $ret = $this->course->update($room_id,$data); 
         if ($ret<=0)
         {

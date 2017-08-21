@@ -10,7 +10,9 @@ class Course
     const FIELD_ROOM_ID = 'room_id';
     const FIELD_CREATE_TIME = 'create_time';
     const FIELD_START_TIME = 'start_time';
+    const FIELD_START_IMSEQ = 'start_imseq';
     const FIELD_END_TIME = 'end_time';
+    const FIELD_END_IMSEQ = 'end_imseq';
     const FIELD_LAST_UPDATE_TIME = 'last_update_time';
     const FIELD_TITLE = 'title';
     const FIELD_COVER = 'cover';
@@ -40,8 +42,14 @@ class Course
     // 开始时间 => int
     private $startTime=0;
 
+    // 上课时的im消息seqno => int
+    private $startImSeq=0;
+
     // 结束时间 => int
     private $endTime=0;
+
+    // 下课时的im消息seqno => int
+    private $endImSeq=0;
 
     // 上次心跳时间 => int
     private $lastUpdateTime=0;
@@ -77,7 +85,8 @@ class Course
         }
         try
         {
-            $sql = 'INSERT INTO t_course (host_uin, create_time,title,cover,state) VALUES (:host_uin, :create_time,:title,:cover,0)';
+            $sql = 'INSERT INTO t_course (host_uin, create_time,title,cover,state) 
+            VALUES (:host_uin, :create_time,:title,:cover,'.self::COURSE_STATE_CREATED.')';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':host_uin', $this->hostUin, PDO::PARAM_INT);
             $stmt->bindParam(':create_time', date('U'), PDO::PARAM_INT);
@@ -118,7 +127,6 @@ class Course
             self::FIELD_START_TIME,          
             self::FIELD_END_TIME,          
             self::FIELD_LAST_UPDATE_TIME,
-            self::FIELD_APPID,
             self::FIELD_TITLE,
             self::FIELD_COVER,           
             self::FIELD_HOST_UIN,
@@ -163,8 +171,12 @@ class Course
             $this->createTime = $fields[self::FIELD_CREATE_TIME];
          if(array_key_exists(self::FIELD_START_TIME, $fields))
             $this->startTime = $fields[self::FIELD_START_TIME];
+         if(array_key_exists(self::FIELD_START_IMSEQ, $fields))
+            $this->startImSeq = $fields[self::FIELD_START_IMSEQ];
          if(array_key_exists(self::FIELD_END_TIME, $fields))
             $this->endTime = $fields[self::FIELD_END_TIME];
+         if(array_key_exists(self::FIELD_END_IMSEQ, $fields))
+            $this->endImSeq = $fields[self::FIELD_END_IMSEQ];
          if(array_key_exists(self::FIELD_LAST_UPDATE_TIME, $fields))
             $this->lastUpdateTime = $fields[self::FIELD_LAST_UPDATE_TIME];
          if(array_key_exists(self::FIELD_TITLE, $fields))
@@ -195,7 +207,9 @@ class Course
             self::FIELD_ROOM_ID => $this->room_id,
             self::FIELD_CREATE_TIME => $this->createTime,
             self::FIELD_START_TIME => $this->startTime,
+            self::FIELD_START_IMSSEQ => $this->startImSeq,
             self::FIELD_END_TIME => $this->endTime,
+            self::FIELD_END_IMSEQ => $this->endImSeq,
             self::FIELD_LAST_UPDATE_TIME => $this->lastUpdateTime,
             self::FIELD_TITLE => $this->title,
             self::FIELD_COVER => $this->cover,
@@ -275,13 +289,17 @@ class Course
      * @param & return totalCount:符合条件的记录总条数.带给调用者
      * 说明：成功返回列表,同时顺便带回总记录条数，失败返回null
      */
-    public static function getCourseList($appid,$uin,$state,$fromTime,$toTime,$offset,$limit,&$totalCount)
+    public static function getCourseList($appid,$uin,$roomID,$state,$fromTime,$toTime,$offset,$limit,&$totalCount)
     {
         //t_course => b,t_acount => a
         $whereSql=" where a.appid=$appid and a.uin=b.host_uin ";
         if($state != self::COURSE_STATE_INVALID)
         {
             $whereSql.=" and state=$state";
+        }
+        if($roomID>0)
+        {
+            $whereSql.=" and room_id=$roomID";
         }
         if($fromTime>0)
         {
@@ -314,7 +332,9 @@ class Course
             }
             $totalCount=$stmt->fetch()['total'];
 
-            $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,b.cover as cover,b.playback_idx_url as playback_idx_url,b.start_time as start_time,b.end_time as end_time '.
+            $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,
+            b.cover as cover,b.playback_idx_url as playback_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
+            b.end_time as end_time,b.end_imseq as end_imseq  '.
                    ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time,b.create_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
@@ -347,7 +367,9 @@ class Course
                 'cover' => $row['cover'],
                 'playback_idx_url' => $row['playback_idx_url'],
                 'begin_time' => (int)$row['start_time'],
+                'begin_imseq' => (int)$row['start_imseq'],
                 'end_time' => (int)$row['end_time'],
+                'end_imseq' => (int)$row['end_imseq'],
              );
         }
         return $data;
@@ -370,7 +392,6 @@ class Course
             case self::FIELD_START_TIME:
             case self::FIELD_END_TIME:
             case self::FIELD_LAST_UPDATE_TIME:
-            case self::FIELD_APPID:
             case self::FIELD_HOST_UIN:
                 return PDO::PARAM_INT;
             default:
@@ -410,6 +431,16 @@ class Course
         $this->startTime = $startTime;
     }
 
+    public function getStartImSeq()
+    {
+        return $this->startImSeq;
+    }
+
+    public function setStartImSeq($startImSeq)
+    {
+        $this->startImSeq = $startImSeq;
+    }
+
     public function getEndTime()
     {
         return $this->endTime;
@@ -418,6 +449,16 @@ class Course
     public function setEndTime($endTime)
     {
         $this->endTime = $endTime;
+    }
+
+    public function getEndImSeq()
+    {
+        return $this->endImSeq;
+    }
+
+    public function setEndImSeq($endImSeq)
+    {
+        $this->endImSeq = $endImSeq;
     }
 
     public function getLastUpdateTime()
@@ -458,6 +499,16 @@ class Course
     public function setHostUin($hostUin)
     {
         $this->hostUin = $hostUin;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setState($state)
+    {
+        $this->state = $state;
     }
 
     public function getImGroupID()
