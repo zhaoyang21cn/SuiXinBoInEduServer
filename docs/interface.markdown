@@ -136,7 +136,8 @@ pwd|String|必填|密码(采用base64加密)
 	"errorInfo": "",
 	"data":{
 		"userSig":"[usersig]",
-		"token":"[token]"
+		"token":"[token]",
+		"role":1
 	}
  }
 ```
@@ -145,6 +146,7 @@ pwd|String|必填|密码(采用base64加密)
 :-----: | :-----: | :-----: | :-----: 
 userSig|String|必填|userSig用于IM登录
 token|String|必填|用户唯一标识(后续请求携带)
+role|int|必填|参考 注册协议里role的说明
 
 ### 下线(退出)
 

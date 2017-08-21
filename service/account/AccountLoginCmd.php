@@ -116,6 +116,7 @@ class AccountLoginCmd extends Cmd
 
 	$data['userSig'] = $userSig;
 	$data['token'] = $token;
+	$data['role'] = (int)$account->getRole();
 	return new CmdResp(ERR_SUCCESS, '', $data);
     }
 }
