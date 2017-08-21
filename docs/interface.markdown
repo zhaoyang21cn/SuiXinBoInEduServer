@@ -35,8 +35,8 @@
 
 
 #### 需自行实现的功能点
+* 各种签名的续期,包括但不限于客户端token, 腾讯IM云userSig,Cos多次签名, vod签名.
 
-* 客户端token定时续期
 
 ### 请求方式
 
@@ -481,12 +481,10 @@ size|Integer|必填|列表长度
 	"errorInfo": "",
 	"data":{
    		"total":100,
-   		"idlist":[
-       	{
+   		"idlist":[{
            "id":"willduo",
            "role":1
-       	}
-    	]
+       	}]
 	}
  }
 
