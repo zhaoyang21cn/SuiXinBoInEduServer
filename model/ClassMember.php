@@ -132,7 +132,7 @@ class ClassMember
     }
 
     /* 功能：清空房间成员
-     * 说明：用于直播结束清空房间成员；成功：true, 出错：false
+     * 说明：用于直播结束清空房间成员；成功：>=0, 出错：<0
      */
     static public function ClearRoomByRoomNum($roomId)
     {

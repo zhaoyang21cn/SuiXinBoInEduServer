@@ -1,61 +1,82 @@
 <?php
 /**
- * 退出房间接口
- * Date: 2016/11/17
+ * 退出课程接口
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 
 require_once SERVICE_PATH . '/TokenCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
-require_once MODEL_PATH . '/AvRoom.php';
-require_once MODEL_PATH . '/InteractAvRoom.php';
-require_once MODEL_PATH . '/NewLiveRecord.php';
+require_once MODEL_PATH . '/Course.php';
+require_once MODEL_PATH . '/ClassMember.php';
+require_once LIB_PATH . '/im/im_group.php';
 
 class ExitLiveRoomCmd extends TokenCmd
 {
 
-    private $avRoom;
+    private $roomNum;
 
     public function parseInput()
     {
-        if (empty($this->req['roomnum'])) {
+        if (!isset($this->req['roomnum'])) {
             return new CmdResp(ERR_REQ_DATA, 'Lack of roomnum');
         }
-        if (!is_int($this->req['roomnum'])) {
-            if (is_string($this->req['roomnum'])) {
-                $this->req['roomnum'] = intval($this->req['roomnum']);
-            } else {
-                return new CmdResp(ERR_REQ_DATA, 'Invalid roomnum');
-            }
+        if (!is_int($this->req['roomnum']) || $this->req['roomnum']<=0 ) {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid roomnum');
         }
-
-        if (empty($this->req['type'])) {
-            return new CmdResp(ERR_REQ_DATA, 'Lack of type');
-        }
-        if (!is_string($this->req['type'])) {
-            return new CmdResp(ERR_REQ_DATA, ' Invalid type');
-        }
+        $this->roomNum=$this->req['roomnum'];
 
         return new CmdResp(ERR_SUCCESS, '');
     }
 
     public function handle()
     {
-        //删除直播记录
-        $ret = NewLiveRecord::delete($this->user);
-        if (!$ret) {
-            return new CmdResp(ERR_SERVER, 'Server internal error: Delete live record fail');
+        $course = new Course();
+        $course->setRoomID($this->roomNum);
+        
+        //检查课堂是否存在
+        $ret=$course->load();
+        if ($ret<=0)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
         }
+        //检查课程状态是否正常
+        if($course->getState()!=course::COURSE_STATE_LIVING)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: only state=living room can exit');
+        }
+
+        //发送IM消息记录时间戳
+        $customMsg=array();
+        $customMsg["type"]=1002;
+        $customMsg["seq"]=rand(10000, 100000000);
+        $customMsg["timestamp"]=$this->timeStamp;
+        $customMsg["value"]=array('uid' =>$this->userName);
+        $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->roomNum,$customMsg);
+        if($ret<0)
+        {
+            return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
+        }
+        $imSeqNum=$ret;
 
         //清空房间成员
-        $ret = InteractAvRoom::ClearRoomByRoomNum($this->req['roomnum']);
-        if (!$ret) {
-            return new CmdResp(ERR_SERVER, 'Server internal error: Delete member list fail');
+        $ret = ClassMember::ClearRoomByRoomNum($this->roomNum);
+        if ($ret<0)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error:delete room member failed'); 
         }
 
-        //更新 以该uid为主播的room num房间结束时间
-        AvRoom::finishRoomByUidAndRoomNum($this->user, $this->req['roomnum']);
+        //更新课程信息
+        $data = array();
+        $data[course::FIELD_STATE] = course::COURSE_STATE_HAS_LIVED;
+        $data[course::FIELD_END_TIME] = date('U');
+        $data[course::FIELD_END_IMSEQ] = $imSeqNum;
+        $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
+        $ret = $course->update($course->getRoomID(),$data); 
+        if ($ret<=0)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
+        }
 
         return new CmdResp(ERR_SUCCESS, '');
     }
