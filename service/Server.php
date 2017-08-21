@@ -9,7 +9,7 @@ require_once LIB_PATH . '/log/FileLogHandler.php';
 require_once LIB_PATH . '/log/Log.php';
 
 /**
- * Date: 2016/4/19
+ * 
  */
 class Server
 {
