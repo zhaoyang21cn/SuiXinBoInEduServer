@@ -133,7 +133,7 @@ class CmdProxyCmd extends TokenCmd
             return new CmdResp(ERR_SERVER, 'Server internal error:unsupport action.');
         }
 
-        $data = $service->$functionName($package);
+        $data = $service->$functionName($this->params);
         if($data==false)
         {
             $qloud_data=array();
