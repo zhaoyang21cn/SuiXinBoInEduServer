@@ -40,6 +40,7 @@ class Router
         'vod' => array(
             'get_sign' => 'VodGetSignCmd',
             'get_client_sign' => 'VodGetClientSignCmd',
+            'cmd_proxy' => 'CmdProxyCmd',
         ),
     );
 
