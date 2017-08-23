@@ -31,7 +31,6 @@ class VodGetClientSignCmd extends TokenCmd
                 "currentTimeStamp" => $current,
                 "expireTime" => $expired,
                 "random" => rand());
-        Log::info(var_dump($arg_list));
 
         // 计算签名
         $orignal = http_build_query($arg_list);
