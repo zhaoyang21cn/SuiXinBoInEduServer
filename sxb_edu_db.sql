@@ -93,9 +93,10 @@ CREATE TABLE IF NOT EXISTS `t_video_record` (
  `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '视频的拥有者',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
  `video_id`     varchar(50)   NOT  NULL   DEFAULT ''  COMMENT '视频id',                            
- `play_url`     varchar(128)  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
+ `video_url`     varchar(128)  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
  `start_time`  int(11)       NOT  NULL   DEFAULT  0  COMMENT '视频录制开始时间戳',                                      
  `end_time`  int(11)       NOT  NULL   DEFAULT  0  COMMENT '视频录制结束时间戳',                                     
+ `media_start_time`  int(11)       NOT  NULL   DEFAULT  0  COMMENT '视频录制开始客户端时间戳',                                      
  `file_size`  int(11)       NOT  NULL   DEFAULT  0  COMMENT '文件大小',
  `duration`  int(11)       NOT  NULL   DEFAULT  0  COMMENT '时长', 
   PRIMARY KEY (`id`)

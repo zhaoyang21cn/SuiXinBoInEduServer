@@ -31,8 +31,8 @@ class Router
             'reportbind' => 'ReportBindResourceCmd',
             'querybind' => 'QueryBindResourceCmd',
 
-            //callback
-            'callback' => 'CallbackCmd',
+            //录制回调函数
+            'reccall' => 'RecCallbackCmd',
         ),
         'cos' => array(
             'get_sign' => 'CosGetSignCmd',

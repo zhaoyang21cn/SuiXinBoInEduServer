@@ -814,14 +814,14 @@ token|String|必填|用户token
 sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
 SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
 
-### 录制结束回调接口
+### 录制回调接口
 
 * 接收旁路直播和录制相关服务器回调的通知
 
 * 请求URL
 
 ```php
-index.php?svc=live&cmd=recendcall
+index.php?svc=live&cmd=reccall
 ```
 * 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
 
