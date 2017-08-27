@@ -359,7 +359,7 @@ class Course
         foreach ($rows as $row)
         {
             $data[] = array(
-                'uid' => $row['uid'],
+                'host_uid' => $row['uid'],
                 'title' => $row['title'],
                 'roomnum' => (int)$row['room_id'],
                 'state' => (int)$row['state'],
