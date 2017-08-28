@@ -834,9 +834,26 @@ index.php?svc=live&cmd=reccall
 ```php
 index.php?svc=live&cmd=idxfileendcall
 ```
+* request字段示例
 
- 
+```json
+ {
+	"roomnum":18,
+    "playback_idx_url":"www.xxx.com"
+ }
+```
 
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+roomnum|Integer|必填|房间id
+playback_idx_url|String|必填|回放索引文件地址
 
+* response字段示例
 
+```json
+ {  "errorCode": 0,
+	"errorInfo": ""
+ }
+
+```
 
