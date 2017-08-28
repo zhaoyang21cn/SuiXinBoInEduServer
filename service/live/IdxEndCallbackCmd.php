@@ -17,29 +17,29 @@ require_once LIB_PATH . '/log/Log.php';
 class IdxEndCallbackCmd extends SimpleCmd
 {
     private $roomNum = 0;
-    private $playbackIdxUrl = 0;
+    private $replayIdxUrl = 0;
 
     public function parseInput()
     {
-        if (!isset($this->req['roomnum']))
+        if (!isset($this->req['groupid']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'lack of roomnum');
+            return new CmdResp(ERR_REQ_DATA, 'lack of groupid');
         }
-        if(!is_int($this->req['roomnum']))
+        if(!is_string($this->req['groupid']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'invalid type of roomnum');
+            return new CmdResp(ERR_REQ_DATA, 'invalid type of groupid');
         }
-        $this->roomNum = $this->req['roomnum'];
+        $this->roomNum = (int)$this->req['groupid'];
 
-        if (!isset($this->req['playback_idx_url']))
+        if (!isset($this->req['replayIdxUrl']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'lack of playback_idx_url');
+            return new CmdResp(ERR_REQ_DATA, 'lack of replayIdxUrl');
         }
-        if(!is_string($this->req['playback_idx_url']))
+        if(!is_string($this->req['replayIdxUrl']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'invalid type of playback_idx_url');
+            return new CmdResp(ERR_REQ_DATA, 'invalid type of replayIdxUrl');
         }
-        $this->playbackIdxUrl = $this->req['playback_idx_url'];
+        $this->replayIdxUrl = $this->req['replayIdxUrl'];
 
         return new CmdResp(ERR_SUCCESS, '');
     }
@@ -64,7 +64,7 @@ class IdxEndCallbackCmd extends SimpleCmd
         //更新课程信息
         $data = array();
         $data[course::FIELD_STATE] = course::COURSE_STATE_CAN_PLAYBACK;
-        $data[course::FIELD_PLAYBACK_IDX_URL] = $this->playbackIdxUrl;
+        $data[course::FIELD_PLAYBACK_IDX_URL] = $this->replayIdxUrl;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $ret = $course->update($this->roomNum,$data); 
         if ($ret<=0)
