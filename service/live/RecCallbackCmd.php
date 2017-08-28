@@ -34,92 +34,92 @@ class RecCallbackCmd extends SimpleCmd
     {
         if (!isset($this->req['event_type']))
         {
-            return new CmdResp(ERR_DATA, 'lack of event_type');
+            return new CmdResp(ERR_REQ_DATA, 'lack of event_type');
         }
         if(!is_int($this->req['event_type']))
         {
-            return new CmdResp(ERR_DATA, 'invalid type of event_type');
+            return new CmdResp(ERR_REQ_DATA, 'invalid type of event_type');
         }
         $this->eventType = $this->req['event_type'];
 
         if (!isset($this->req['stream_id']))
         {
-            return new CmdResp(ERR_DATA, 'lack of stream_id');
+            return new CmdResp(ERR_REQ_DATA, 'lack of stream_id');
         }
         if(!is_string($this->req['stream_id']))
         {
-            return new CmdResp(ERR_DATA, 'invalid type of stream_id');
+            return new CmdResp(ERR_REQ_DATA, 'invalid type of stream_id');
         }
         $this->streamId = $this->req['stream_id'];
 
         if ($this->eventType == 100) {
             if (!isset($this->req['start_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of start_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of start_time');
             }
             if(!is_int($this->req['start_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of start_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of start_time');
             }
             $this->startTime = $this->req['start_time'];
 
             if (!isset($this->req['end_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of end_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of end_time');
             }
             if(!is_int($this->req['end_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of end_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of end_time');
             }
             $this->endTime = $this->req['end_time'];
 
             if (!isset($this->req['media_start_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of media_start_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of media_start_time');
             }
             if(!is_int($this->req['media_start_time']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of media_start_time');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of media_start_time');
             }
             $this->mediaStartTime = $this->req['media_start_time'];
 
             if (!isset($this->req['file_size']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of file_size');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of file_size');
             }
             if(!is_int($this->req['file_size']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of file_size');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of file_size');
             }
             $this->fileSize = $this->req['file_size'];
 
             if (!isset($this->req['duration']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of duration');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of duration');
             }
             if(!is_int($this->req['duration']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of duration');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of duration');
             }
             $this->duration = $this->req['duration'];
 
             if (!isset($this->req['video_id']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of video_id');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of video_id');
             }
             if(!is_string($this->req['video_id']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of video_id');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of video_id');
             }
             $this->videoId = $this->req['video_id'];
 
             if (!isset($this->req['video_url']))
             {
-                return new CmdResp(ERR_DATA, 'event100 lack of video_url');
+                return new CmdResp(ERR_REQ_DATA, 'event100 lack of video_url');
             }
             if(!is_string($this->req['video_url']))
             {
-                return new CmdResp(ERR_DATA, 'event100 invalid type of video_url');
+                return new CmdResp(ERR_REQ_DATA, 'event100 invalid type of video_url');
             }
             $this->videoUrl = $this->req['video_url'];
 
@@ -129,12 +129,12 @@ class RecCallbackCmd extends SimpleCmd
                 parse_str($stream_param, $parr);
                 if (!isset($parr['groupid']))
                 {
-                    return new CmdResp(ERR_DATA, 'event100 lack of stream_param.groupid');
+                    return new CmdResp(ERR_REQ_DATA, 'event100 lack of stream_param.groupid');
                 }
                 $this->groupId = $parr['groupid'];
                 if (!isset($parr['uid']))
                 {
-                    return new CmdResp(ERR_DATA, 'event100 lack of stream_param.uid');
+                    return new CmdResp(ERR_REQ_DATA, 'event100 lack of stream_param.uid');
                 }
                 $this->uid = $parr['uid'];
             }

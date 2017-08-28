@@ -33,6 +33,9 @@ class Router
 
             //录制回调函数
             'reccall' => 'RecCallbackCmd',
+            
+            //索引文件生成完成回调接口
+            'idxfileendcall' => 'IdxEndCallbackCmd',
         ),
         'cos' => array(
             'get_sign' => 'CosGetSignCmd',
