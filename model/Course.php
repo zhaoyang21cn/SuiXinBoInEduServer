@@ -530,6 +530,46 @@ class Course
     {
         $this->playbackIdxUrl = $playbackIdxUrl;
     }
+
+    /* 功能：找出正在直播状态的无心跳课程id列表
+     * @param inactiveSeconds:无心跳秒数
+     * 说明：成功返回课程id列表,失败返回null
+     */
+    public static function getDeathCourseList($inactiveSeconds)
+    {
+        $rows=array();
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            return null;
+        }
+
+        try
+        {
+            $sql = 'select room_id from t_course where state=:state and last_update_time<:lastUpdateTime';
+            $stmt = $dbh->prepare($sql);
+            $lastUpdateTime = date('U') - $inactiveSeconds;
+            $stmt->bindParam(":lastUpdateTime", $lastUpdateTime, PDO::PARAM_INT);
+            $state=self::COURSE_STATE_LIVING;
+            $stmt->bindParam(":state", $state, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            if (!$result)
+            {
+                return null;
+            }
+            $rows = $stmt->fetchAll();
+            if (empty($rows))
+            {
+                return array();
+            }
+        }
+        catch (PDOException $e)
+        {
+            return null;
+        }
+        
+        return $rows;
+    }
 }
 
 

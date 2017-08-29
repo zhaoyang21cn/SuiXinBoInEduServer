@@ -4,6 +4,7 @@
  */
 require_once dirname(__FILE__) . '/../Path.php';
 require_once LIB_PATH . '/db/DB.php';
+require_once MODEL_PATH . '/Account.php';
 
 class ClassMember
 {
@@ -270,7 +271,7 @@ class ClassMember
      * 说明：由定时清理程序调用。删除心跳超过定时（inactiveSeconds）时间的成员
      *      成功返回1，失败返回-1
      */
-    public static function deleteDeathRoomMember($inactiveSeconds)
+    public static function deleteDeathRoomMember($inactiveSeconds,$role=Account::ACCOUNT_ROLE_STUDENT)
     {
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))
@@ -279,7 +280,18 @@ class ClassMember
         }
         try
         {
-            $sql = 'DELETE FROM t_class_member WHERE last_heartbeat_time < :lastHeartBeatTime';
+            $where='a.uin == b.host_uin';
+            if($role!=Account::ACCOUNT_ROLE_TEACHER)
+            {
+                $where='a.uin != b.host_uin';
+            }
+            
+            $sql = 'DELETE a FROM t_class_member a,t_course b 
+            WHERE a.room_id=b.room_id and a.last_heartbeat_time < :lastHeartBeatTime';
+            if(strlen($where)>0)
+            {
+                $sql=$sql." and  " .$where;
+            }
             $stmt = $dbh->prepare($sql);
             $lastHeartBeatTime = date('U') - $inactiveSeconds;
             $stmt->bindParam(":lastHeartBeatTime", $lastHeartBeatTime, PDO::PARAM_INT);

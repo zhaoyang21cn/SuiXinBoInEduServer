@@ -38,15 +38,24 @@ class HeartBeatCmd extends TokenCmd
 
     public function handle()
     {
-        $errorMsg = '';
+        $course = new Course();
+        $course->setRoomID($this->roomnum);
+        
+        //检查课堂是否存在
+        $ret=$course->load();
+        if ($ret<=0)
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+        }
+
         //更新房间成员心跳
         $ret = ClassMember::updateLastHeartBeatTime($this->uin,$this->roomnum,$this->curTime);
         if ($ret<=0) {
             return new CmdResp(ERR_SERVER, 'Server error: update member heartbeat time fail');
         }
 
-        //更新课程信息
-        if($this->account->getRole()==Account::ACCOUNT_ROLE_TEACHER)
+        //如果是老师,则更新课程信息
+        if($course->getHostUin() == $this->account->getUin())
         {
             $data = array();
             $data[Course::FIELD_LAST_UPDATE_TIME] = $this->curTime;
