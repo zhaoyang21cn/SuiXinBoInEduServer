@@ -50,6 +50,12 @@ class CreateLiveRoomCmd extends TokenCmd
 
     public function handle()
     {
+        //只有老师才有权限创建课堂
+        if($this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER)
+        {
+            return new CmdResp(ERR_SERVER, 'Server error: only teacher can create a course.');
+        }
+
         // 每次请求都创建一个新的房间出来
         $ret = $this->course->create();
         if ($ret<=0)
