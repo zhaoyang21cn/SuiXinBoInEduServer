@@ -13,17 +13,24 @@ require_once LIB_PATH . '/log/Log.php';
  */
 class Server
 {
+    private $startMsec;
+    private $endMsec;
+
     private function sendResp($reply, $svc = "Unknown", $cmd = "Unknown", $start = 0, $end = 0)
     {
+        $this->endMsec=microtime(true);
+        
         header('Content-Type: application/json');
         $req_str = file_get_contents('php://input');
         $rsp_str = json_encode($reply);
-        Log::info('svc = ' . $svc . ', cmd = ' . $cmd . ', time = ' . ($end - $start) . " secs, req:" . $req_str.",rsp_str:".$rsp_str);
+        Log::info('svc = ' . $svc . ', cmd = ' . $cmd . ', time = ' . round(($this->endMsec - $this->startMsec)*1000) . " msec, req:" . $req_str.",rsp_str:".$rsp_str);
         echo $rsp_str;
     }
 
     public function handle()
     {
+        $this->startMsec=microtime(true);
+
         $handler = new FileLogHandler(LOG_PATH . '/sxb_' . date('Y-m-d') . '.log');
         Log::init($handler);
         if (!isset($_REQUEST['svc']) || !isset($_REQUEST['cmd']))

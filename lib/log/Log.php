@@ -84,7 +84,9 @@ class Log
         $msg .= ">\n" . $content;
         if(($level & $this->level) == $level )
         {
-            $msg = '<' . date('Y-m-d H:i:s') . '|'. LogLevel::toString($level) . str_replace("\n", "\n\t", $msg) . "\n";
+            list($usec, $sec) = explode(" ", microtime()); 
+            $usec=round($usec*1000000); 
+            $msg = '<' . date('Y-m-d H:i:s') .'.'.$usec. '|'. LogLevel::toString($level) . str_replace("\n", "\n\t", $msg) . "\n";
             $this->handler->write($msg);
         }
     }
