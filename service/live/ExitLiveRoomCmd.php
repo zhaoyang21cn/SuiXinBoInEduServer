@@ -40,6 +40,12 @@ class ExitLiveRoomCmd extends TokenCmd
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
         }
+        //只有老师才可以下课
+        if($course->getHostUin() != $this->account->getUin())
+        {
+            return new CmdResp(ERR_SERVER, 'Server internal error: only the teacher can end a course.');
+        }
+
         //检查课程状态是否正常
         if($course->getState()!=course::COURSE_STATE_LIVING)
         {

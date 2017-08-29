@@ -46,11 +46,14 @@ class HeartBeatCmd extends TokenCmd
         }
 
         //更新课程信息
-        $data = array();
-        $data[Course::FIELD_LAST_UPDATE_TIME] = $this->curTime;
-        $ret = Course::update($this->roomnum, $data);
-        if ($ret <= 0) {
-            return new CmdResp(ERR_SERVER, 'Server error: update course heartbeat time fail');
+        if($this->account->getRole()==Account::ACCOUNT_ROLE_TEACHER)
+        {
+            $data = array();
+            $data[Course::FIELD_LAST_UPDATE_TIME] = $this->curTime;
+            $ret = Course::update($this->roomnum, $data);
+            if ($ret <= 0) {
+                return new CmdResp(ERR_SERVER, 'Server error: update course heartbeat time fail');
+            }
         }
 
         return new CmdResp(ERR_SUCCESS, '');

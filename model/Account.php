@@ -8,6 +8,10 @@ require_once LIB_PATH . '/db/DB.php';
 
 class Account
 {
+    const ACCOUNT_ROLE_STUDENT=0; //老师
+    const ACCOUNT_ROLE_TEACHER=1; //学生
+
+
     // 用户ID => int
     private $uin;
 

@@ -184,7 +184,7 @@ class Course
          if(array_key_exists(self::FIELD_COVER, $fields))
             $this->cover = $fields[self::FIELD_COVER];
          if(array_key_exists(self::FIELD_HOST_UIN, $fields))
-            $this->host_uin = $fields[self::FIELD_HOST_UIN];
+            $this->hostUin = $fields[self::FIELD_HOST_UIN];
          if(array_key_exists(self::FIELD_STATE, $fields))
             $this->state = $fields[self::FIELD_STATE];
          if(array_key_exists(self::FIELD_IM_GROUP_ID, $fields))

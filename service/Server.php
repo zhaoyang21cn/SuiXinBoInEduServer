@@ -16,9 +16,10 @@ class Server
     private function sendResp($reply, $svc = "Unknown", $cmd = "Unknown", $start = 0, $end = 0)
     {
         header('Content-Type: application/json');
-        $str = json_encode($reply);
-        Log::info('response svc = ' . $svc . ', cmd = ' . $cmd . ', time = ' . ($end - $start) . " secs, data:\n" . $str);
-        echo $str;
+        $req_str = file_get_contents('php://input');
+        $rsp_str = json_encode($reply);
+        Log::info('svc = ' . $svc . ', cmd = ' . $cmd . ', time = ' . ($end - $start) . " secs, req:" . $req_str.",rsp_str:".$rsp_str);
+        echo $rsp_str;
     }
 
     public function handle()
@@ -49,8 +50,6 @@ class Server
             return;
         }
 
-        $str = file_get_contents('php://input');
-        Log::info('request svc = ' . $svc . ', cmd = ' . $cmd . ", data:\n" . $str);
         $start = time();
         require_once SERVICE_PATH . '/' . $svc . '/' . $className . '.php';
         $handler = new $className();
