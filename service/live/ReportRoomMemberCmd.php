@@ -61,7 +61,7 @@ class ReportRoomMemberCmd extends TokenCmd
         //检查直播房间是否存在
         if($this->classMember->getRoomId() <= 0)
         {
-            //return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'room is not exist'); 
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'room is not exist'); 
         }
         $ret = false;
         if($this->operate == self::OPERATE_ENTER) //成员进入房间
@@ -89,7 +89,7 @@ class ReportRoomMemberCmd extends TokenCmd
             $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->roomNum,$customMsg);
             if($ret<0)
             {
-                return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
+                return new CmdResp(ERR_SEND_IM_MSG, 'save info to imgroup failed.');
             }
         }
  

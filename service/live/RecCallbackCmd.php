@@ -163,7 +163,7 @@ class RecCallbackCmd extends SimpleCmd
             $ret=$course->load();
             if($ret<=0)
             {
-                return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+                return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
             }
 
             //发送IM消息记录开始时间,uid等
@@ -184,7 +184,7 @@ class RecCallbackCmd extends SimpleCmd
             $ret = ImGroup::SendCustomMsg($hostAccount->getAppID(),(string)$this->groupId,$customMsg);
             if($ret<0)
             {
-                return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
+                return new CmdResp(ERR_SEND_IM_MSG, 'save info to imgroup failed.');
             }
 
             //插入录制记录

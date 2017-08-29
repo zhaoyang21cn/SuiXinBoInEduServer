@@ -52,13 +52,13 @@ class IdxEndCallbackCmd extends SimpleCmd
         $ret=$course->load();
         if($ret<=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
 
         //校验房间状态
         if($course->getState()!=course::COURSE_STATE_HAS_LIVED && $course->getState()!=course::COURSE_STATE_CAN_PLAYBACK)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: course state error');
+            return new CmdResp(ERR_ROOM_STATE, 'course state error');
         }
 
         //更新课程信息

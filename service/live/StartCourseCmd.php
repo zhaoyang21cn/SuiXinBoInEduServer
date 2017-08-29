@@ -42,17 +42,17 @@ class StartCourseCmd extends TokenCmd
         $ret=$this->course->load();
         if ($ret<=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
         //只有老师才可以开课
         if($this->course->getHostUin() != $this->account->getUin())
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: only the teacher can start a course.');
+            return new CmdResp(ERR_NO_PRIVILEGE, ' only the teacher can start a course.');
         }
         //检查课程状态是否正常
         if($this->course->getState()!=course::COURSE_STATE_CREATED)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: only state=created room can start a course');
+            return new CmdResp(ERR_ROOM_STATE, ' only state=created room can start a course');
         }
 
         //发送IM消息记录时间戳
@@ -64,7 +64,7 @@ class StartCourseCmd extends TokenCmd
         $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->course->getRoomID(),$customMsg);
         if($ret<0)
         {
-            return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
+            return new CmdResp(ERR_SEND_IM_MSG, 'save info to imgroup failed.');
         }
         $imSeqNum=$ret;
 

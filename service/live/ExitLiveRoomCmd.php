@@ -38,18 +38,18 @@ class ExitLiveRoomCmd extends TokenCmd
         $ret=$course->load();
         if ($ret<=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
         //只有老师才可以下课
         if($course->getHostUin() != $this->account->getUin())
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: only the teacher can end a course.');
+            return new CmdResp(ERR_NO_PRIVILEGE, 'only the teacher can end a course.');
         }
 
         //检查课程状态是否正常
         if($course->getState()!=course::COURSE_STATE_LIVING)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: only state=living room can exit');
+            return new CmdResp(ERR_ROOM_STATE, 'only state=living room can exit');
         }
 
         //发送IM消息记录时间戳
@@ -61,7 +61,7 @@ class ExitLiveRoomCmd extends TokenCmd
         $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->roomNum,$customMsg);
         if($ret<0)
         {
-            return new CmdResp(ERR_SERVER, 'save info to imgroup failed.');
+            return new CmdResp(ERR_SEND_IM_MSG, 'save info to imgroup failed.');
         }
         $imSeqNum=$ret;
 

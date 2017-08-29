@@ -45,7 +45,7 @@ class HeartBeatCmd extends TokenCmd
         $ret=$course->load();
         if ($ret<=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: get room info failed');
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
 
         //更新房间成员心跳

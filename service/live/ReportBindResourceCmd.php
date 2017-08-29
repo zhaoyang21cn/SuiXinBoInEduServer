@@ -99,12 +99,12 @@ class ReportBindResourceCmd extends TokenCmd
         //不能重复绑定
         if($this->operate == self::OPERATE_BIND && $totalCount!=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server error: has binded.');
+            return new CmdResp(ERR_REPEAT_BIND, 'has binded.');
         }
         //解绑,需要已经绑定
         if($this->operate == self::OPERATE_UNBIND && $totalCount==0)
         {
-            return new CmdResp(ERR_SERVER, 'Server error: the resource not binded');
+            return new CmdResp(ERR_RESOURCE_STATE, 'the resource not binded');
         }
         
         
