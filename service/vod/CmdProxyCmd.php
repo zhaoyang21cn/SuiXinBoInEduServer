@@ -130,7 +130,7 @@ class CmdProxyCmd extends TokenCmd
         if($functionName!="DescribeVodInfo"
            && $functionName!="GetVideoInfo")
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error:unsupport action.');
+            return new CmdResp(ERR_NO_PRIVILEGE, 'Server internal error:unsupport action.');
         }
 
         $data = $service->$functionName($this->params);

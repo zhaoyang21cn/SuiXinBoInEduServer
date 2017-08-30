@@ -58,11 +58,34 @@ class ReportRoomMemberCmd extends TokenCmd
 
     public function handle()
     {
-        //检查直播房间是否存在
+        $course = new Course();
+        $course->setRoomID($this->roomNum);
+        
+        //检查课堂是否存在
+        $ret=$course->load();
+        if ($ret<=0)
+        {
+            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
+        }
+
+        //这个接口是学生专用
+        if($course->getHostUin() == $this->account->getUin())
+        {
+            return new CmdResp(ERR_NO_PRIVILEGE, 'only the student can call this api.');
+        }
+
+        //检查课程状态是否正常
+        if($course->getState()!=course::COURSE_STATE_LIVING)
+        {
+            return new CmdResp(ERR_ROOM_STATE, 'can only enter a state=living room');
+        }
+
+        //检查直播房间是否已经存在
         if($this->classMember->getRoomId() <= 0)
         {
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'room is not exist'); 
         }
+
         $ret = false;
         if($this->operate == self::OPERATE_ENTER) //成员进入房间
         {

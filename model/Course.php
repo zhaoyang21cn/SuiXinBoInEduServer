@@ -1,6 +1,6 @@
 <?php
 /**
- * 课程表
+ * 课程表,对应t_course
  */
 require_once dirname(__FILE__) . '/../Path.php';
 require_once LIB_PATH . '/db/DB.php';
@@ -71,6 +71,137 @@ class Course
 
     // 回放索引文件地址 => string
     private $playbackIdxUrl = '';
+
+    // Getters and Setters
+    public function getRoomID()
+    {
+        return $this->room_id;
+    }
+
+    public function setRoomID($room_id)
+    {
+        $this->room_id = $room_id;
+    }
+
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime($createTime)
+    {
+        $this->createTime = $createTime;
+    }
+
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime($startTime)
+    {
+        $this->startTime = $startTime;
+    }
+
+    public function getStartImSeq()
+    {
+        return $this->startImSeq;
+    }
+
+    public function setStartImSeq($startImSeq)
+    {
+        $this->startImSeq = $startImSeq;
+    }
+
+    public function getEndTime()
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime($endTime)
+    {
+        $this->endTime = $endTime;
+    }
+
+    public function getEndImSeq()
+    {
+        return $this->endImSeq;
+    }
+
+    public function setEndImSeq($endImSeq)
+    {
+        $this->endImSeq = $endImSeq;
+    }
+
+    public function getLastUpdateTime()
+    {
+        return $this->lastUpdateTime;
+    }
+
+    public function setLastUpdateTime($lastUpdateTime)
+    {
+        $this->lastUpdateTime = $lastUpdateTime;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    public function getCover()
+    {
+        return $this->cover;
+    }
+
+    public function setCover($cover)
+    {
+        $this->cover = $cover;
+    }
+
+    public function getHostUin()
+    {
+        return $this->hostUin;
+    }
+
+    public function setHostUin($hostUin)
+    {
+        $this->hostUin = $hostUin;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+
+    public function getImGroupID()
+    {
+        return $this->imGroupID;
+    }
+
+    public function setImGroupID($imGroupID)
+    {
+        $this->imGroupID = $imGroupID;
+    }
+
+    public function getPlaybackIdxUrl()
+    {
+        return $this->playbackIdxUrl;
+    }
+
+    public function setPlaybackIdxUrl($playbackIdxUrl)
+    {
+        $this->playbackIdxUrl = $playbackIdxUrl;
+    }
 
     /**
      * 创建 创建课程
@@ -398,137 +529,6 @@ class Course
                 break;
         }
         return '';
-    }
-
-    // Getters and Setters
-    public function getRoomID()
-    {
-        return $this->room_id;
-    }
-
-    public function setRoomID($room_id)
-    {
-        $this->room_id = $room_id;
-    }
-
-    public function getCreateTime()
-    {
-        return $this->createTime;
-    }
-
-    public function setCreateTime($createTime)
-    {
-        $this->createTime = $createTime;
-    }
-
-    public function getStartTime()
-    {
-        return $this->startTime;
-    }
-
-    public function setStartTime($startTime)
-    {
-        $this->startTime = $startTime;
-    }
-
-    public function getStartImSeq()
-    {
-        return $this->startImSeq;
-    }
-
-    public function setStartImSeq($startImSeq)
-    {
-        $this->startImSeq = $startImSeq;
-    }
-
-    public function getEndTime()
-    {
-        return $this->endTime;
-    }
-
-    public function setEndTime($endTime)
-    {
-        $this->endTime = $endTime;
-    }
-
-    public function getEndImSeq()
-    {
-        return $this->endImSeq;
-    }
-
-    public function setEndImSeq($endImSeq)
-    {
-        $this->endImSeq = $endImSeq;
-    }
-
-    public function getLastUpdateTime()
-    {
-        return $this->lastUpdateTime;
-    }
-
-    public function setLastUpdateTime($lastUpdateTime)
-    {
-        $this->lastUpdateTime = $lastUpdateTime;
-    }
-
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    public function getCover()
-    {
-        return $this->cover;
-    }
-
-    public function setCover($cover)
-    {
-        $this->cover = $cover;
-    }
-
-    public function getHostUin()
-    {
-        return $this->hostUin;
-    }
-
-    public function setHostUin($hostUin)
-    {
-        $this->hostUin = $hostUin;
-    }
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-
-    public function getImGroupID()
-    {
-        return $this->imGroupID;
-    }
-
-    public function setImGroupID($imGroupID)
-    {
-        $this->imGroupID = $imGroupID;
-    }
-
-    public function getPlaybackIdxUrl()
-    {
-        return $this->playbackIdxUrl;
-    }
-
-    public function setPlaybackIdxUrl($playbackIdxUrl)
-    {
-        $this->playbackIdxUrl = $playbackIdxUrl;
     }
 
     /* 功能：找出正在直播状态的无心跳课程id列表

@@ -1,6 +1,6 @@
 <?php
 /**
- * 创建一个课堂,返回一个课堂id
+ *  开课
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 
@@ -45,9 +45,10 @@ class StartCourseCmd extends TokenCmd
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
         //只有老师才可以开课
-        if($this->course->getHostUin() != $this->account->getUin())
+        if( $this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
+            || $this->course->getHostUin() != $this->account->getUin())
         {
-            return new CmdResp(ERR_NO_PRIVILEGE, ' only the teacher can start a course.');
+            return new CmdResp(ERR_NO_PRIVILEGE, ' only the teacher who created the course can start it.');
         }
         //检查课程状态是否正常
         if($this->course->getState()!=course::COURSE_STATE_CREATED)

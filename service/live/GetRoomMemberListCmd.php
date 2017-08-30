@@ -1,7 +1,6 @@
 <?php
 /**
  * 房间成员列表接口
- * Date: 2016/11/17
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 

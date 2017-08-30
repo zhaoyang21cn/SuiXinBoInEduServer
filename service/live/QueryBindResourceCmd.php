@@ -1,6 +1,6 @@
 <?php
 /**
- * 播片/课件 关联列表查询
+ * 资源(播片/课件) 关联列表查询
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 

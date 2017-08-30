@@ -1,6 +1,6 @@
 <?php
 /**
- * 资源(课件/播片)关联表
+ * 资源(课件/播片)关联表,对应t_bind_file
  */
 require_once dirname(__FILE__) . '/../Path.php';
 require_once LIB_PATH . '/db/DB.php';
@@ -149,9 +149,10 @@ class BindFile
             return -1;
         }
     }
-    /* 功能：查询课程列表
-     * @param roomID: 要搜索的课程
+    /* 功能：查询绑定的资源(课件等)
+     * @param roomID: 要搜索的课程ID
      * @param uin: 要搜索的老师
+     * @param url: 要搜索的课件
      * @param offset:起始位置(从0开始)
      * @param limit:要拉取的列表长度
      * @param & return totalCount:符合条件的记录总条数.带给调用者

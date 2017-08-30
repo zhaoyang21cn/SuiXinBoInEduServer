@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * 账号注册
  */
 
 require_once dirname(__FILE__) . '/../../Path.php';

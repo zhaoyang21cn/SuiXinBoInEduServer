@@ -1,6 +1,6 @@
 <?php
 /**
- * 对应t_account
+ * 账号表,对应t_account
  */
 
 require_once dirname(__FILE__) . '/../Path.php';

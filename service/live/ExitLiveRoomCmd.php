@@ -1,6 +1,6 @@
 <?php
 /**
- * 退出课程接口
+ * 老师退出课程接口
  */
 require_once dirname(__FILE__) . '/../../Path.php';
 
@@ -41,9 +41,10 @@ class ExitLiveRoomCmd extends TokenCmd
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
         //只有老师才可以下课
-        if($course->getHostUin() != $this->account->getUin())
+        if($this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
+           || $course->getHostUin() != $this->account->getUin())
         {
-            return new CmdResp(ERR_NO_PRIVILEGE, 'only the teacher can end a course.');
+            return new CmdResp(ERR_NO_PRIVILEGE, 'only the teacher can end the course.');
         }
 
         //检查课程状态是否正常

@@ -56,7 +56,8 @@ class IdxEndCallbackCmd extends SimpleCmd
         }
 
         //校验房间状态
-        if($course->getState()!=course::COURSE_STATE_HAS_LIVED && $course->getState()!=course::COURSE_STATE_CAN_PLAYBACK)
+        if($course->getState()!=course::COURSE_STATE_HAS_LIVED 
+            && $course->getState()!=course::COURSE_STATE_CAN_PLAYBACK)
         {
             return new CmdResp(ERR_ROOM_STATE, 'course state error');
         }

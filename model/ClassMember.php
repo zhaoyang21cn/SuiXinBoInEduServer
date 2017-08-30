@@ -1,6 +1,6 @@
 <?php
 /**
- * 房间成员列表
+ * 房间成员列表,对应t_class_member
  */
 require_once dirname(__FILE__) . '/../Path.php';
 require_once LIB_PATH . '/db/DB.php';

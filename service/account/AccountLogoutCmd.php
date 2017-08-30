@@ -1,8 +1,7 @@
 <?php
 
 /**
- * 用户注册接口
- * Date: 2016/11/15
+ * 用户退出登录
  */
 
 require_once dirname(__FILE__) . '/../../Path.php';

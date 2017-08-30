@@ -1,6 +1,6 @@
 <?php
 /**
- * 视频记录表
+ * 录制视频记录表,对应t_video_record
  */
 require_once dirname(__FILE__) . '/../Config.php';
 require_once LIB_PATH . '/db/DB.php';
