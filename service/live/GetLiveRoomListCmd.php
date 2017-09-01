@@ -129,15 +129,15 @@ class GetLiveRoomListCmd extends TokenCmd
         if(strlen($this->hostUid)>0)
         {
             $hostAccount=new Account(); 
-            $hostAccount->uid=$this->hostUid; 
+            $hostAccount->setUser($this->hostUid); 
             $errorMsg = '';
             $ret = $hostAccount->getAccountRecordByUserID($errorMsg);
             if($ret != ERR_SUCCESS) 
             {
                 return new CmdResp($ret, "check host_uid failed,msg:".$errorMsg);
             }
-            $hostUin=$hostAccount->uin;
-            if($this->appID != $hostAccount->appID)
+            $hostUin=$hostAccount->getUin();
+            if($this->appID != $hostAccount->getAppID())
             {
                 return new CmdResp(ERR_REQ_DATA, "you and host_uid are from diff appid.");
             }
