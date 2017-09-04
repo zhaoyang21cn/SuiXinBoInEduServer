@@ -10,6 +10,7 @@ require_once MODEL_PATH . '/Account.php';
 
 abstract class TokenCmd
 {
+    protected $logstr;
 
     protected $req;
     protected $account; //信令发起方的账户信息
@@ -122,6 +123,7 @@ abstract class TokenCmd
 
         $this->uin = $this->account->getUin();
         $this->userName = $this->account->getUser();
+        $this->logstr=$this->logstr."|user:".$this->userName."|userid:".$this->uin;
 
         $resp = $this->parseInput();
 
@@ -130,5 +132,9 @@ abstract class TokenCmd
         }
         $resp = $this->handle();
         return $resp;
+    }
+    public final function getLog()
+    {
+        return $this->logstr;
     }
 }

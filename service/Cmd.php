@@ -8,6 +8,7 @@ require_once 'CmdResp.php';
  */
 abstract class Cmd
 {
+    protected $logstr;
 
     protected $req;
     protected $appID;
@@ -89,5 +90,9 @@ abstract class Cmd
         }
         $resp = $this->handle();
         return $resp;
+    }
+    public final function getLog()
+    {
+        return $this->logstr;
     }
 }

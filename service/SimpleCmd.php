@@ -8,7 +8,7 @@ require_once 'CmdResp.php';
  */
 abstract class SimpleCmd
 {
-
+    protected $logstr;
     protected $req;
 
     private function loadJsonReq()
@@ -60,5 +60,9 @@ abstract class SimpleCmd
         }
         $resp = $this->handle();
         return $resp;
+    }
+    public final function getLog()
+    {
+        return $this->logstr;
     }
 }

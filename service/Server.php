@@ -15,6 +15,7 @@ class Server
 {
     private $startMsec;
     private $endMsec;
+    private $cmdHandle;
 
     private function sendResp($reply, $svc = "Unknown", $cmd = "Unknown", $start = 0, $end = 0)
     {
@@ -23,7 +24,8 @@ class Server
         header('Content-Type: application/json');
         $req_str = file_get_contents('php://input');
         $rsp_str = json_encode($reply);
-        Log::info('svc = ' . $svc . ', cmd = ' . $cmd . ', time = ' . round(($this->endMsec - $this->startMsec)*1000) . " msec, req:" . $req_str.",rsp_str:".$rsp_str);
+        Log::info('svc=' . $svc .',cmd=' . $cmd . ',time=' . round(($this->endMsec - $this->startMsec)*1000) . 
+        " msec,".$this->cmdHandle->getLog()." req:" . $req_str.",rsp_str:".$rsp_str);
         echo $rsp_str;
     }
 
@@ -59,8 +61,8 @@ class Server
 
         $start = time();
         require_once SERVICE_PATH . '/' . $svc . '/' . $className . '.php';
-        $handler = new $className();
-        $resp = $handler->execute();
+        $this->cmdHandle = new $className();
+        $resp = $this->cmdHandle->execute();
         $reply = $resp->toArray();
         $this->sendResp($reply, $svc, $cmd, $start, time());
     }
