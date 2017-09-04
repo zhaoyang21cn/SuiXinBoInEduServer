@@ -411,7 +411,7 @@ class Course
     }
     /* 功能：查询课程列表
      * @param appid:
-     * @param uin: 要搜索的老师,为0表示全部老师
+     * @param hostUin: 要搜索的老师,为0表示全部老师
      * @param state:要拉取的课程的状态,COURSE_STATE_INVALID(-1)表示所有状态
      * @param fromTime:搜索开始UTC
      * @param toTime:搜索结束UTC
@@ -420,13 +420,17 @@ class Course
      * @param & return totalCount:符合条件的记录总条数.带给调用者
      * 说明：成功返回列表,同时顺便带回总记录条数，失败返回null
      */
-    public static function getCourseList($appid,$uin,$roomID,$state,$fromTime,$toTime,$offset,$limit,&$totalCount)
+    public static function getCourseList($appid,$hostUin,$roomID,$state,$fromTime,$toTime,$offset,$limit,&$totalCount)
     {
         //t_course => b,t_acount => a
         $whereSql=" where a.appid=$appid and a.uin=b.host_uin ";
         if($state != self::COURSE_STATE_INVALID)
         {
             $whereSql.=" and state=$state";
+        }
+        if($hostUin>0)
+        {
+            $whereSql.=" and host_uin=$hostUin";
         }
         if($roomID>0)
         {
