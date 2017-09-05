@@ -10,6 +10,7 @@ class BindFile
     const FIELD_ID = 'id';
     const FIELD_UIN = 'uin';
     const FIELD_ROOM_ID = 'room_id';
+    const FIELD_BIND_TIME = 'bind_time';
     const FIELD_TYPE = 'type';
     const FIELD_FILE_NAME = 'file_name';
     const FIELD_URL = 'url';
@@ -31,6 +32,9 @@ class BindFile
 
     // 课程号 => int
     private $roomID=0;
+
+    // 绑定时间 => int
+    private $bindTime=0;
 
     // 课件类型 => int
     private $type=0;
@@ -54,6 +58,7 @@ class BindFile
         $fields = array(
             self::FIELD_UIN => $this->uin,
             self::FIELD_ROOM_ID => $this->roomID,
+            self::FIELD_BIND_TIME => $this->bindTime,
             self::FIELD_TYPE => $this->type,
             self::FIELD_FILE_NAME => $this->fileName,
             self::FIELD_URL => $this->url,
@@ -158,7 +163,7 @@ class BindFile
      * @param & return totalCount:符合条件的记录总条数.带给调用者
      * 说明：成功返回列表,同时顺便带回总记录条数，失败返回null
      */
-    public static function getList($roomID,$uin,$url,$offset,$limit,&$totalCount)
+    public static function getList($roomID,$uin,$url,$fromTime,$toTime,$offset,$limit,&$totalCount)
     {
         $whereSql=" where room_id=:room_id and uin=:uin ";
         $has_url=0;
@@ -166,6 +171,14 @@ class BindFile
         {
             $whereSql.=" and url=:url";
             $has_url=1;
+        }
+        if($fromTime>0)
+        {
+            $whereSql.=" and bind_time>=:fromTime";
+        }
+        if($toTime>0)
+        {
+            $whereSql.=" and bind_time<=:toTime";
         }
         
         //记录从数据库取到的记录
@@ -184,6 +197,8 @@ class BindFile
             $stmt->bindParam(":room_id", $roomID, PDO::PARAM_INT);
             $stmt->bindParam(":uin", $uin, PDO::PARAM_INT);
             if($has_url)$stmt->bindParam(":url", $url, PDO::PARAM_STR);
+            if($fromTime>0)$stmt->bindParam(":fromTime", $fromTime, PDO::PARAM_INT);
+            if($toTime>0)$stmt->bindParam(":toTime", $toTime, PDO::PARAM_INT);
             $result = $stmt->execute();
             if (!$result)
             {
@@ -193,12 +208,14 @@ class BindFile
             }
             $totalCount=$stmt->fetch()['total'];
 
-            $sql = 'SELECT type,file_name,url FROM t_bind_file ' . $whereSql . ' ORDER BY id DESC LIMIT ' .
+            $sql = 'SELECT type,bind_time,file_name,url FROM t_bind_file ' . $whereSql . ' ORDER BY id DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(":room_id", $roomID, PDO::PARAM_INT);
             $stmt->bindParam(":uin", $uin, PDO::PARAM_INT);
             if($has_url)$stmt->bindParam(":url", $url, PDO::PARAM_STR);
+            if($fromTime>0)$stmt->bindParam(":fromTime", $fromTime, PDO::PARAM_INT);
+            if($toTime>0)$stmt->bindParam(":toTime", $toTime, PDO::PARAM_INT);
             $result = $stmt->execute();
             if (!$result)
             {
@@ -221,6 +238,7 @@ class BindFile
         {
             $data[] = array(
                 'type' => (int)$row['type'],
+                'bind_time' => (int)$row['bind_time'],
                 'file_name' => $row['file_name'],
                 'url' => $row['url'],
              );
@@ -234,7 +252,7 @@ class BindFile
         return $this->id;
     }
 
-    public function setID($room_id)
+    public function setID($id)
     {
         $this->id = $id;
     }
@@ -257,6 +275,16 @@ class BindFile
     public function setRoomID($roomID)
     {
         $this->roomID = $roomID;
+    }
+
+    public function getBindTime()
+    {
+        return $this->bindTime;
+    }
+
+    public function setBindTime($bindTime)
+    {
+        $this->bindTime = $bindTime;
     }
 
     public function getType()

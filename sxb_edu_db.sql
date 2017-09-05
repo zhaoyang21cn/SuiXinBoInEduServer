@@ -111,12 +111,15 @@ CREATE TABLE IF NOT EXISTS `t_video_record` (
 
 CREATE TABLE IF NOT EXISTS `t_bind_file` (
  `id`           int(11)       NOT  NULL   AUTO_INCREMENT  COMMENT 'id',
- `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '资源的拥有者',            
- `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id',               
+ `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '资源的拥有者', 
+ `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '课程id', 
+ `bind_time`   int(11)      NOT  NULL DEFAULT  0  COMMENT '操作时的UTC时间戳', 
  `type`   int(11)      NOT  NULL DEFAULT  0  COMMENT '0:课件,1:播片',
  `file_name`   varchar(256)      NOT  NULL DEFAULT  0  COMMENT '文件名',
  `url`     text  NOT  NULL   DEFAULT ''  COMMENT '视频url',                            
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_uin` (`uin`),
+  KEY `idx_roomid` (`room_id`)
 )AUTO_INCREMENT=10001;
 
 -- --------------------------------------------------------

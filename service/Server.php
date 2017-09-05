@@ -24,8 +24,13 @@ class Server
         header('Content-Type: application/json');
         $req_str = file_get_contents('php://input');
         $rsp_str = json_encode($reply);
+        $strlog="";
+        if(!is_null($this->cmdHandle) && !empty($this->cmdHandle) && is_object($this->cmdHandle))
+        {
+            $strlog=$this->cmdHandle->getLog();
+        }
         Log::info('svc=' . $svc .',cmd=' . $cmd . ',time=' . round(($this->endMsec - $this->startMsec)*1000) . 
-        " msec,".$this->cmdHandle->getLog()." req:" . $req_str.",rsp_str:".$rsp_str);
+        " msec,".$strlog." req:" . $req_str.",rsp_str:".$rsp_str);
         echo $rsp_str;
     }
 

@@ -12,23 +12,48 @@ require_once MODEL_PATH . '/BindFile.php';
 class QueryBindResourceCmd extends TokenCmd
 {
     private $roomnum;
+    private $fromTime;
+    private $toTime;
     private $index;
     private $size;
 
     public function parseInput()
     {
-        if (!isset($this->req['roomnum'])) {
-            return new CmdResp(ERR_REQ_DATA, 'Lack of roomnum');
+        if (isset($this->req['roomnum']) && !is_int($this->req['roomnum'])) {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid roomnum');
         }
-        if (!is_int($this->req['roomnum'])) {
-            if (is_string($this->req['roomnum'])) {
-                $this->req['roomnum'] = intval($this->req['roomnum']);
-            }
-            else{
-                return new CmdResp(ERR_REQ_DATA, ' Invalid roomnum');
-            }
+        if(isset($this->req['roomnum']))
+        {
+            $this->roomnum = $this->req['roomnum'];
         }
-        $this->roomnum = $this->req['roomnum'];
+        else
+        {
+            $this->roomnum=0;
+        }
+
+        if (isset($this->req['from_time']) && !is_int($this->req['from_time'])) {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid from_time');
+        }
+        if(isset($this->req['from_time']))
+        {
+            $this->fromTime = $this->req['from_time'];
+        }
+        else
+        {
+            $this->fromTime=0;
+        }
+
+        if (isset($this->req['to_time']) && !is_int($this->req['to_time'])) {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid to_time');
+        }
+        if(isset($this->req['to_time']))
+        {
+            $this->toTime = $this->req['to_time'];
+        }
+        else
+        {
+            $this->toTime=0;
+        }
 
         if (!isset($this->req['index'])) {
             return new CmdResp(ERR_REQ_DATA, 'Lack of page index');
@@ -54,7 +79,8 @@ class QueryBindResourceCmd extends TokenCmd
     {
         //获取已经绑定的资源
         $totalCount=0;
-        $recordList = BindFile::getList($this->roomnum,$this->uin,null,$this->index, $this->size,$totalCount);
+        $recordList = BindFile::getList($this->roomnum,$this->uin,null,$this->fromTime,$this->toTime,
+            $this->index, $this->size,$totalCount);
         if (is_null($recordList)) {
             return new CmdResp(ERR_SERVER, 'Server error: get bind file list fail');
         }

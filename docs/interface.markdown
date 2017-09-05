@@ -327,7 +327,7 @@ index.php?svc=live&cmd=roomlist
 	"index":0,
 	"size":10,
 	"from_time":1412345678,
-	"to_time":1412346678
+	"to_time":1412346678,
 	"host_uid":"teacher",
 	"state":0
  }
@@ -522,9 +522,9 @@ index.php?svc=live&cmd=reportbind
 	  "roomnum":18,
 	  "operate":0,
 	  "bind_file":{
-                    "type":0,
-                    "file_name":"file_name",
-		    "url":"[url]"
+            "type":0,
+            "file_name":"file_name",
+            "url":"[url]"
      }
  }
 ```
@@ -532,7 +532,7 @@ index.php?svc=live&cmd=reportbind
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-roomnum|int|必填|房间号
+roomnum|int|选填|房间号,无此字段或者为0表示只将资源和用户建立关联
 operate|int|必填| 关联 0 取消关联 1
 bind_file|Object|必填|课件信息
 
@@ -565,8 +565,10 @@ index.php?svc=live&cmd=querybind
 
 ```json
  {  "token":"[token]",
-    "roomnum":18
-    "index":0
+    "roomnum":18,
+	"from_time":1412345678,
+	"to_time":1412346678,
+    "index":0,
     "size":50
  }
 ```
@@ -574,7 +576,9 @@ index.php?svc=live&cmd=querybind
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 token|String|必填|用户token
-roomnum|int|必填|房间号
+roomnum|int|选填|房间号,无此字段或者为0表示查询用户关联的资源
+from_time|Integer|选填|搜索开始时间戳(1970年1月1日以来的秒数)
+to_time|Integer|选填|搜索结束时间戳(1970年1月1日以来的秒数)
 index|Integer|必填|起始位置(从0开始)
 size|Integer|必填|列表长度
 
@@ -587,11 +591,13 @@ size|Integer|必填|列表长度
         "total":2,
         "bind_files":[{
             "type":0,
+            "bind_time":1456784245,
             "file_name":"file_name",
             "url":"[url]"
          },
          {
             "type":0,
+            "bind_time":1456784245,
             "file_name":"file_name",
             "url":"[url]"
         }]
@@ -609,6 +615,7 @@ bind_file信息
 字段  | 类型  | 选项 | 说明
 :-----: | :-----: | :-----: | :-----: 
 type|int|必填|资源类型,0:课件,1:播片
+bind_time|int|必填|绑定时间(1970年1月1日以来的秒数)
 file_name|String|必填|文件名
 url|String|必填|资源对应的url
 

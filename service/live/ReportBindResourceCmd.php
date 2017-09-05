@@ -7,6 +7,7 @@ require_once dirname(__FILE__) . '/../../Path.php';
 require_once SERVICE_PATH . '/TokenCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
+require_once MODEL_PATH . '/Course.php';
 require_once MODEL_PATH . '/BindFile.php';
 
 
@@ -29,14 +30,18 @@ class ReportBindResourceCmd extends TokenCmd
 
     public function parseInput()
     {
-        if (!isset($this->req['roomnum']))
+        if (isset($this->req['roomnum']) && !is_int($this->req['roomnum']))
         {
-            return new CmdResp(ERR_REQ_DATA, 'Lack of roomnum');
+            return new CmdResp(ERR_REQ_DATA, 'Invalid roomnum');
         }
-        if (!is_int($this->req['roomnum'])) {
-           return new CmdResp(ERR_REQ_DATA, ' Invalid roomnum');
+        if (isset($this->req['roomnum']))
+        {
+            $this->roomNum=$this->req['roomnum'];
         }
-        $this->roomNum=$this->req['roomnum'];
+        else
+        {
+            $this->roomNum=0;
+        }
         
         if (!isset($this->req['operate']))
         {
@@ -90,32 +95,35 @@ class ReportBindResourceCmd extends TokenCmd
 
     public function handle()
     {
-        $course = new Course();
-        $course->setRoomID($this->roomNum);
-        
-        //检查课堂是否存在
-        $ret=$course->load();
-        if ($ret<=0)
+        if($this->roomNum > 0)
         {
-            return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
-        }
-        //只有老师才能绑定解绑资源
-        if($this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
-           || $course->getHostUin() != $this->account->getUin())
-        {
-            return new CmdResp(ERR_NO_PRIVILEGE, 'only the teacher can bind/unbind a resource.');
-        }
+            $course = new Course();
+            $course->setRoomID($this->roomNum);
 
-        //检查课程状态是否正常
-        if($course->getState()!=course::COURSE_STATE_CREATED
-            && $course->getState()!=course::COURSE_STATE_LIVING)
-        {
-            return new CmdResp(ERR_ROOM_STATE, 'only state=created/living room can bind resource');
+            //检查课堂是否存在
+            $ret=$course->load();
+            if ($ret<=0)
+            {
+                return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
+            }
+            //只有老师才能绑定解绑资源
+            if($this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
+                    || $course->getHostUin() != $this->account->getUin())
+            {
+                return new CmdResp(ERR_NO_PRIVILEGE, 'only the teacher can bind/unbind a resource.');
+            }
+
+            //检查课程状态是否正常
+            if($course->getState()!=course::COURSE_STATE_CREATED
+                    && $course->getState()!=course::COURSE_STATE_LIVING)
+            {
+                return new CmdResp(ERR_ROOM_STATE, 'only state=created/living room can bind resource');
+            }
         }
 
         //检查是否已经绑定
         $totalCount=0;
-        $recordList = BindFile::getList($this->roomNum,$this->uin,$this->url,0,1,$totalCount);
+        $recordList = BindFile::getList($this->roomNum,$this->uin,$this->url,0,0,0,1,$totalCount);
         if (is_null($recordList)) {
             return new CmdResp(ERR_SERVER, 'Server error: check if bind fail');
         }
@@ -130,13 +138,13 @@ class ReportBindResourceCmd extends TokenCmd
             return new CmdResp(ERR_RESOURCE_STATE, 'the resource not binded');
         }
         
-        
         $ret=0;
         if($this->operate == self::OPERATE_BIND)
         {
             $bindFile=new BindFile();
             $bindFile->setUin($this->uin);
             $bindFile->setRoomID($this->roomNum);
+            $bindFile->setBindTime(date('U'));
             $bindFile->setType($this->type);
             $bindFile->setFileName($this->fileName);
             $bindFile->setUrl($this->url);
