@@ -83,6 +83,7 @@ class StartCourseCmd extends TokenCmd
         $data[course::FIELD_START_TIME] = date('U');
         $data[course::FIELD_START_IMSEQ] = $imSeqNum;
         $data[course::FIELD_END_TIME] = 0;
+        $data[course::FIELD_END_IMSEQ] = 0;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $ret = $this->course->update($this->course->getRoomID(),$data); 
         if ($ret<=0)

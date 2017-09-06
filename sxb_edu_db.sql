@@ -59,12 +59,14 @@ CREATE TABLE IF NOT EXISTS `t_course` (
   `end_imseq` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时的im消息seqno',
   `last_rec_imseq` int(11)      NOT  NULL DEFAULT  0 COMMENT '最近一次录制结束对应的消息seqno',
   `last_update_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '心跳时间戳',                       
+  `can_trigger_replay_idx_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '可以触发索引文件生成指令的UTC', 
+  `trigger_replay_idx_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '本课程触发索引文件生成指令的UTC', 
   `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
   `cover` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '封面URL',
   `host_uin` int(11) NOT NULL DEFAULT 0 COMMENT '老师UIN',
   `state` int(11)      NOT  NULL DEFAULT  0 COMMENT '课程状态,0-created,已创建未上课,1-living,正在上课中,2-has_lived,已下课但不能回放,3-can_playback,可以回放',
   `im_group_id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'im群组号',
-  `playback_idx_url` text COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '播放索引文件地址',
+  `replay_idx_url` text COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '播放索引文件地址',
   PRIMARY KEY (`room_id`),
   KEY `idx_host_uin` (`host_uin`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='课程表' AUTO_INCREMENT=10001 ;

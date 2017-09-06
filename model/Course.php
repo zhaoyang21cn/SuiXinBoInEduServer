@@ -15,12 +15,14 @@ class Course
     const FIELD_END_IMSEQ = 'end_imseq';
     const FIELD_LAST_REC_IMSEQ = 'last_rec_imseq';
     const FIELD_LAST_UPDATE_TIME = 'last_update_time';
+    const FIELD_CAN_TRIGGER_REPLAY_IDX_TIME = 'can_trigger_replay_idx_time';
+    const FIELD_TRIGGER_REPLAY_IDX_TIME = 'trigger_replay_idx_time';
     const FIELD_TITLE = 'title';
     const FIELD_COVER = 'cover';
     const FIELD_HOST_UIN = 'host_uin';
     const FIELD_STATE = 'state';
     const FIELD_IM_GROUP_ID = 'im_group_id';
-    const FIELD_PLAYBACK_IDX_URL = 'playback_idx_url'; 
+    const FIELD_REPLAY_IDX_URL = 'replay_idx_url'; 
     
     //课程state取值
     const COURSE_STATE_INVALID=-1; //非法课程状态,不可能出现
@@ -58,6 +60,12 @@ class Course
     // 上次心跳时间 => int
     private $lastUpdateTime=0;
 
+    // 客户端可以触发生成回放索引文件的时间 => int
+    private $canTriggerReplayIdxTime=0;
+
+    // 客户端触发生成回放索引文件的时间 => int
+    private $triggerReplayIdxTime=0;
+
     // 直播标题 => sring
     private $title = '';
 
@@ -74,7 +82,7 @@ class Course
     private $imGroupID='';
 
     // 回放索引文件地址 => string
-    private $playbackIdxUrl = '';
+    private $replayIdxUrl = '';
 
     // Getters and Setters
     public function getRoomID()
@@ -157,6 +165,26 @@ class Course
         $this->lastUpdateTime = $lastUpdateTime;
     }
 
+    public function getCanTriggerReplayIdxTime()
+    {
+        return $this->canTriggerReplayIdxTime;
+    }
+
+    public function setCanTriggerReplayIdxTime($canTriggerReplayIdxTime)
+    {
+        $this->canTriggerReplayIdxTime = $canTriggerReplayIdxTime;
+    }
+
+    public function getTriggerReplayIdxTime()
+    {
+        return $this->triggerReplayIdxTime;
+    }
+
+    public function setTriggerReplayIdxTime($triggerReplayIdxTime)
+    {
+        $this->triggerReplayIdxTime = $triggerReplayIdxTime;
+    }
+
     public function getTitle()
     {
         return $this->title;
@@ -207,14 +235,14 @@ class Course
         $this->imGroupID = $imGroupID;
     }
 
-    public function getPlaybackIdxUrl()
+    public function getReplayIdxUrl()
     {
-        return $this->playbackIdxUrl;
+        return $this->replayIdxUrl;
     }
 
-    public function setPlaybackIdxUrl($playbackIdxUrl)
+    public function setReplayIdxUrl($replayIdxUrl)
     {
-        $this->playbackIdxUrl = $playbackIdxUrl;
+        $this->replayIdxUrl = $replayIdxUrl;
     }
 
     /**
@@ -272,12 +300,14 @@ class Course
             self::FIELD_START_TIME,          
             self::FIELD_END_TIME,          
             self::FIELD_LAST_UPDATE_TIME,
+            self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME,
+            self::FIELD_TRIGGER_REPLAY_IDX_TIME,
             self::FIELD_TITLE,
             self::FIELD_COVER,           
             self::FIELD_HOST_UIN,
             self::FIELD_STATE,
             self::FIELD_IM_GROUP_ID,
-            self::FIELD_PLAYBACK_IDX_URL,
+            self::FIELD_REPLAY_IDX_URL,
         );
         try
         {
@@ -326,6 +356,10 @@ class Course
             $this->lastRecImSeq = $fields[self::FIELD_LAST_REC_IMSEQ];
          if(array_key_exists(self::FIELD_LAST_UPDATE_TIME, $fields))
             $this->lastUpdateTime = $fields[self::FIELD_LAST_UPDATE_TIME];
+         if(array_key_exists(self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME, $fields))
+            $this->canTriggerReplayIdxTime = $fields[self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME];
+         if(array_key_exists(self::FIELD_TRIGGER_REPLAY_IDX_TIME, $fields))
+            $this->triggerReplayIdxTime = $fields[self::FIELD_TRIGGER_REPLAY_IDX_TIME];
          if(array_key_exists(self::FIELD_TITLE, $fields))
             $this->title = $fields[self::FIELD_TITLE];
          if(array_key_exists(self::FIELD_COVER, $fields))
@@ -336,8 +370,8 @@ class Course
             $this->state = $fields[self::FIELD_STATE];
          if(array_key_exists(self::FIELD_IM_GROUP_ID, $fields))
             $this->imGroupID = $fields[self::FIELD_IM_GROUP_ID];
-         if(array_key_exists(self::FIELD_PLAYBACK_IDX_URL, $fields))
-            $this->playbackIdxUrl = $fields[self::FIELD_PLAYBACK_IDX_URL];
+         if(array_key_exists(self::FIELD_REPLAY_IDX_URL, $fields))
+            $this->replayIdxUrl = $fields[self::FIELD_REPLAY_IDX_URL];
     }
 
     /* 功能：将直播记录存入数据库
@@ -359,12 +393,14 @@ class Course
             self::FIELD_END_IMSEQ => $this->endImSeq,
             self::FIELD_LAST_REC_IMSEQ => $this->lastRecImSeq,
             self::FIELD_LAST_UPDATE_TIME => $this->lastUpdateTime,
+            self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME => $this->canTriggerReplayIdxTime,
+            self::FIELD_TRIGGER_REPLAY_IDX_TIME => $this->triggerReplayIdxTime,
             self::FIELD_TITLE => $this->title,
             self::FIELD_COVER => $this->cover,
             self::FIELD_HOST_UIN => $this->hostUin, 
             self::FIELD_STATE => $this->state,
             self::FIELD_IM_GROUP_ID => $this->imGroupID, 
-            self::FIELD_PLAYBACK_IDX_URL => $this->playbackIdxUrl
+            self::FIELD_REPLAY_IDX_URL => $this->replayIdxUrl
         );
         try
         {
@@ -485,8 +521,9 @@ class Course
             $totalCount=$stmt->fetch()['total'];
 
             $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,
-            b.cover as cover,b.playback_idx_url as playback_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
-            b.end_time as end_time,b.end_imseq as end_imseq,b.last_rec_imseq as last_rec_imseq  '.
+            b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
+            b.end_time as end_time,b.end_imseq as end_imseq,b.last_rec_imseq as last_rec_imseq,
+            b.can_trigger_replay_idx_time as can_trigger_replay_idx_time,b.trigger_replay_idx_time as trigger_replay_idx_time '.
                    ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time,b.create_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
@@ -517,12 +554,14 @@ class Course
                 'state' => (int)$row['state'],
                 'groupid' => $row['im_group_id'],
                 'cover' => $row['cover'],
-                'playback_idx_url' => $row['playback_idx_url'],
+                'replay_idx_url' => $row['replay_idx_url'],
                 'begin_time' => (int)$row['start_time'],
                 'begin_imseq' => (int)$row['start_imseq'],
                 'end_time' => (int)$row['end_time'],
                 'end_imseq' => (int)$row['end_imseq'],
                 'last_rec_imseq' => (int)$row['last_rec_imseq'],
+                'can_trigger_replay_idx_time' => (int)$row['can_trigger_replay_idx_time'],
+                'trigger_replay_idx_time' => (int)$row['trigger_replay_idx_time'],
              );
         }
         return $data;
@@ -538,13 +577,15 @@ class Course
             case self::FIELD_TITLE:
             case self::FIELD_COVER:
             case self::FIELD_IM_GROUP_ID:
-            case self::FIELD_PLAYBACK_IDX_URL:
+            case self::FIELD_REPLAY_IDX_URL:
                 return PDO::PARAM_STR;
             case self::FIELD_ROOM_ID:
             case self::FIELD_CREATE_TIME:
             case self::FIELD_START_TIME:
             case self::FIELD_END_TIME:
             case self::FIELD_LAST_UPDATE_TIME:
+            case self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME:
+            case self::FIELD_TRIGGER_REPLAY_IDX_TIME:
             case self::FIELD_HOST_UIN:
                 return PDO::PARAM_INT;
             default:

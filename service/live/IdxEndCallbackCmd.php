@@ -65,7 +65,7 @@ class IdxEndCallbackCmd extends SimpleCmd
         //更新课程信息
         $data = array();
         $data[course::FIELD_STATE] = course::COURSE_STATE_CAN_PLAYBACK;
-        $data[course::FIELD_PLAYBACK_IDX_URL] = $this->replayIdxUrl;
+        $data[course::FIELD_REPLAY_IDX_URL] = $this->replayIdxUrl;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $ret = $course->update($this->roomNum,$data); 
         if ($ret<=0)

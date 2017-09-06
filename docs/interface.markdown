@@ -31,6 +31,8 @@
 * 请求vod签名
 * Vod服务端Api命令通道
 * 请求vod客户端上传签名
+* 请求生成回放索引文件
+
 * 录制结束回调接口
 * 索引文件生成完成回调接口
 
@@ -43,8 +45,10 @@
 
 http POST提交数据，请求字段和应答字段以json封装。
 
-### 通用字段说明
-注:在例子中,通用字段可能没有列出来.正式请求时请带上来.
+### 字段说明
+注:
+1)在例子中,通用字段可能没有列出来.正式请求时请带上来.
+2)协议中的整形时间字段,如未特殊说明,均为从1970年1月1日以来的秒数,即UTC时间
 
 Response公共字段说明
 
@@ -217,7 +221,6 @@ cover|String|可选|课程封面图片
 roomnum|Integer|必填|房间id(服务器分配的唯一房间id)
 groupid|String|必填|(重要)IM群组id.客户端用此id去创建群,必须保证创建的群的groupid就是这个值. 否则,需要新加信令上报实际的groupid
 
-
 ### 开课
 * 课程正式开讲.  创建课程和开课可能发生在不同的登录.老师可以先预先发布一个课程. 
   老师才能调用.
@@ -368,13 +371,15 @@ state取值 | 描述
              "roomnum":18,
              "groupid":"18",
              "cover":"http://cover.png",
-             "memsize":23,
-             "playback_idx_url":"http://xxxxx",
+             "replay_idx_url":"http://xxxxx",
              "begin_time":145668974,
              "begin_imseq":145,
              "end_time":145668974,
              "end_imseq":1456,
-             "last_rec_imseq":1456
+             "last_rec_imseq":1456,
+             "can_trigger_replay_idx_time":0,
+             "trigger_replay_idx_time",0,
+             "memsize":23
         },
         {
 		    "host_uid":"[uid]",
@@ -383,13 +388,15 @@ state取值 | 描述
             "roomnum":19,
             "groupid":"19",
             "cover":"http://cover.png",
-            "memsize":23,
-            "playback_idx_url":"",
+            "replay_idx_url":"",
             "begin_time":145668974,
             "begin_imseq":145,
             "end_time":145668974, 
             "end_imseq":1456,
-            "last_rec_imseq":1456
+            "last_rec_imseq":1456,
+            "can_trigger_replay_idx_time":0,
+            "trigger_replay_idx_time",0,
+            "memsize":23
         }
     ]}
  }
@@ -410,13 +417,15 @@ state|Interger|必填|课程状态
 roomnum|Integer|必填|房间id
 groupid|String|必填|群组id
 cover|String| 选填|封面地址
-memsize|Integer|必填|课程参与人数
-playback_idx_url|String| 选填|回放索引文件地址
-begin_time|Integer|必填|课程开始时间
+replay_idx_url|String| 选填|回放索引文件地址
+begin_time|Integer|必填|课程开始时间(1970年1月1日以来的秒数)
 begin_imseq|Integer|必填|课程开始时对应的im消息的seqno
-end_time|Integer|必填|课程结束时间
+end_time|Integer|必填|课程结束时间(1970年1月1日以来的秒数)
 end_imseq|Integer|必填|课程结束时时对应的im消息的seqno
 last_rec_imseq|Integer|必填|最近一次录制结束对应的im消息的seqno
+can_trigger_replay_idx_time|Integer|必填|可以触发索引文件生成指令的时间(1970年1月1日以来的秒数).</br>此字段非0,且小于当前时间才可以发送生成回放索引的指令
+trigger_replay_idx_time|Integer|必填|触发索引文件生成指令的时间(1970年1月1日以来的秒数)
+memsize|Integer|必填|课程参与人数
 
 ### 上报房间成员变化(成员进出房间)
 
@@ -821,6 +830,36 @@ token|String|必填|用户token
 :-----: | :-----: | :-----: | :-----: 
 sign|String|必填|生成的签名.注意,原始签名,没有进行urlencode
 SecretId|String|必填|调用方需要用SecretId来补充腾讯云的请求中的参数
+
+### 请求生成回放索引文件
+* 请求开始生成回放索引文件.
+  老师才能调用,当时间到达课程信息中的can_trigger_replay_idx_time标注的时间后才可以触发.
+
+* 请求URL 
+ 
+```html
+index.php?svc=live&cmd=makereplayidx
+```
+* request字段示例
+
+```json
+ {  "token":"[token]",
+	"roomnum":18
+ }
+```
+
+字段  | 类型  | 选项 | 说明
+:-----: | :-----: | :-----: | :-----: 
+token|String|必填|用户token
+roomnum|Integer|必填|房间id
+
+* response字段示例
+
+```json
+ {  "errorCode": 0,
+	"errorInfo": ""
+ }
+```
 
 ### 录制回调接口
 

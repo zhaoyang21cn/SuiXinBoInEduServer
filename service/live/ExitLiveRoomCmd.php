@@ -79,6 +79,8 @@ class ExitLiveRoomCmd extends TokenCmd
         $data[course::FIELD_END_TIME] = date('U');
         $data[course::FIELD_END_IMSEQ] = $imSeqNum;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
+        $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = date('U')+300;
+        $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $course->update($course->getRoomID(),$data); 
         if ($ret<=0)
         {

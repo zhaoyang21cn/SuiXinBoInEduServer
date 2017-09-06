@@ -76,7 +76,11 @@ class CreateLiveRoomCmd extends TokenCmd
         $data[course::FIELD_START_TIME] = 0;
         $data[course::FIELD_START_IMSEQ] = 0;
         $data[course::FIELD_END_TIME] = 0;
+        $data[course::FIELD_END_IMSEQ] = 0;
+        $data[course::FIELD_LAST_REC_IMSEQ] = 0;
         $data[course::FIELD_LAST_UPDATE_TIME] = 0;
+        $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
+        $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $this->course->update($room_id,$data); 
         if ($ret<=0)
         {
