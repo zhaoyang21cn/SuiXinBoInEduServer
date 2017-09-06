@@ -186,6 +186,16 @@ class RecCallbackCmd extends SimpleCmd
             {
                 return new CmdResp(ERR_SEND_IM_MSG, 'save info to imgroup failed.');
             }
+            $imSeqNum=$ret;
+
+            //将最近一次录制结束的seqnum更新到Course信息中
+            $data = array();
+            $data[course::FIELD_LAST_REC_IMSEQ] = $imSeqNum;
+            $ret = $course->update($course->getRoomID(),$data); 
+            if ($ret<=0)
+            {
+                return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
+            }
 
             //插入录制记录
             $videoRecord = new VideoRecord();

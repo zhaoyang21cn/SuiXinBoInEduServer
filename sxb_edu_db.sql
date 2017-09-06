@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `t_course` (
   `start_imseq` int(11)      NOT  NULL DEFAULT  0 COMMENT '上课时的im消息seqno',
   `end_time` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时间戳',
   `end_imseq` int(11)      NOT  NULL DEFAULT  0 COMMENT '下课时的im消息seqno',
+  `last_rec_imseq` int(11)      NOT  NULL DEFAULT  0 COMMENT '最近一次录制结束对应的消息seqno',
   `last_update_time`  int(11)      NOT  NULL DEFAULT  0  COMMENT '心跳时间戳',                       
   `title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
   `cover` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '封面URL',

@@ -13,6 +13,7 @@ class Course
     const FIELD_START_IMSEQ = 'start_imseq';
     const FIELD_END_TIME = 'end_time';
     const FIELD_END_IMSEQ = 'end_imseq';
+    const FIELD_LAST_REC_IMSEQ = 'last_rec_imseq';
     const FIELD_LAST_UPDATE_TIME = 'last_update_time';
     const FIELD_TITLE = 'title';
     const FIELD_COVER = 'cover';
@@ -50,6 +51,9 @@ class Course
 
     // 下课时的im消息seqno => int
     private $endImSeq=0;
+
+    // 最近一次录制结束对应的im消息seqno => int
+    private $lastRecImSeq=0;
 
     // 上次心跳时间 => int
     private $lastUpdateTime=0;
@@ -131,6 +135,16 @@ class Course
     public function setEndImSeq($endImSeq)
     {
         $this->endImSeq = $endImSeq;
+    }
+
+    public function getLastRecImSeq()
+    {
+        return $this->lastRecImSeq;
+    }
+
+    public function setLastRecImSeq($lastRecImSeq)
+    {
+        $this->lastRecImSeq = $lastRecImSeq;
     }
 
     public function getLastUpdateTime()
@@ -308,6 +322,8 @@ class Course
             $this->endTime = $fields[self::FIELD_END_TIME];
          if(array_key_exists(self::FIELD_END_IMSEQ, $fields))
             $this->endImSeq = $fields[self::FIELD_END_IMSEQ];
+         if(array_key_exists(self::FIELD_LAST_REC_IMSEQ, $fields))
+            $this->lastRecImSeq = $fields[self::FIELD_LAST_REC_IMSEQ];
          if(array_key_exists(self::FIELD_LAST_UPDATE_TIME, $fields))
             $this->lastUpdateTime = $fields[self::FIELD_LAST_UPDATE_TIME];
          if(array_key_exists(self::FIELD_TITLE, $fields))
@@ -341,6 +357,7 @@ class Course
             self::FIELD_START_IMSSEQ => $this->startImSeq,
             self::FIELD_END_TIME => $this->endTime,
             self::FIELD_END_IMSEQ => $this->endImSeq,
+            self::FIELD_LAST_REC_IMSEQ => $this->lastRecImSeq,
             self::FIELD_LAST_UPDATE_TIME => $this->lastUpdateTime,
             self::FIELD_TITLE => $this->title,
             self::FIELD_COVER => $this->cover,
@@ -469,7 +486,7 @@ class Course
 
             $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,
             b.cover as cover,b.playback_idx_url as playback_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
-            b.end_time as end_time,b.end_imseq as end_imseq  '.
+            b.end_time as end_time,b.end_imseq as end_imseq,b.last_rec_imseq as last_rec_imseq  '.
                    ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time,b.create_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
@@ -505,6 +522,7 @@ class Course
                 'begin_imseq' => (int)$row['start_imseq'],
                 'end_time' => (int)$row['end_time'],
                 'end_imseq' => (int)$row['end_imseq'],
+                'last_rec_imseq' => (int)$row['last_rec_imseq'],
              );
         }
         return $data;

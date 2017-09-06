@@ -373,7 +373,8 @@ state取值 | 描述
              "begin_time":145668974,
              "begin_imseq":145,
              "end_time":145668974,
-             "end_imseq":1456
+             "end_imseq":1456,
+             "last_rec_imseq":1456
         },
         {
 		    "host_uid":"[uid]",
@@ -387,7 +388,8 @@ state取值 | 描述
             "begin_time":145668974,
             "begin_imseq":145,
             "end_time":145668974, 
-            "end_imseq":1456  
+            "end_imseq":1456,
+            "last_rec_imseq":1456
         }
     ]}
  }
@@ -414,6 +416,7 @@ begin_time|Integer|必填|课程开始时间
 begin_imseq|Integer|必填|课程开始时对应的im消息的seqno
 end_time|Integer|必填|课程结束时间
 end_imseq|Integer|必填|课程结束时时对应的im消息的seqno
+last_rec_imseq|Integer|必填|最近一次录制结束对应的im消息的seqno
 
 ### 上报房间成员变化(成员进出房间)
 
@@ -502,8 +505,6 @@ id信息
 :-----: | :-----: | :-----: | :-----: 
 id|String|必填|id
 role|int|必填|1 老师(主播) 0 学生(观众)
-
-
 
 
 ### 课件/播片源关联上报
