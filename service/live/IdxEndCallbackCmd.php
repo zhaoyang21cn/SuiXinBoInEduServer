@@ -69,10 +69,13 @@ class IdxEndCallbackCmd extends SimpleCmd
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $course->update($this->roomNum,$data); 
-        if ($ret<=0)
+        if ($ret<0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }
+
+        //索引文件生成完毕后, 将该房间历史成员信息清理掉
+        ClassMember::delAllUsersFromRoom($this->roomNum);
 
         return new CmdResp(ERR_SUCCESS, '');
     }

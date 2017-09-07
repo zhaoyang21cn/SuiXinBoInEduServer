@@ -437,7 +437,7 @@ class Course
     /* 功能：更新数据库的部分字段,$room_id课程号, $data要更新的字段名和值
      * 说明：成功：更新记录数;出错：-1
      */
-    public function update($room_id,$fields)
+    public static function update($room_id,$fields)
     {
         $dbh = DB::getPDOHandler();
         if (is_null($dbh))

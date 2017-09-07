@@ -66,8 +66,8 @@ class ExitLiveRoomCmd extends TokenCmd
         }
         $imSeqNum=$ret;
 
-        //清空房间成员
-        $ret = ClassMember::ClearRoomByRoomNum($this->roomNum);
+        //房间内所有人退出房间
+        $ret = ClassMember::exitAllUsersFromRoom($this->roomNum);
         if ($ret<0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error:delete room member failed'); 
@@ -82,7 +82,7 @@ class ExitLiveRoomCmd extends TokenCmd
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = date('U')+300;
         $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $course->update($course->getRoomID(),$data); 
-        if ($ret<=0)
+        if ($ret<0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }

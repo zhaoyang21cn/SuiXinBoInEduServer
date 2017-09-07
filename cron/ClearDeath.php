@@ -28,7 +28,7 @@ function clear()
                 continue;
             }
             //清掉房间内所有成员
-            ClassMember::ClearRoomByRoomNum($roomID);
+            ClassMember::exitAllUsersFromRoom($roomID);
             
             //更改房间状态
             $data = array();
@@ -36,12 +36,15 @@ function clear()
             $data[course::FIELD_END_TIME] = date('U');
             $ret = Course::update($roomID,$data);
 
-            Log::info("crontab, clear room $roomID.");
+            Log::info("crontab, clear room".$roomID);
         }
    }
 
-   //删除N秒内没有收到心跳包的课堂里的成员
-   ClassMember::deleteDeathRoomMember(30,Account::ACCOUNT_ROLE_STUDENT);
+   //退出N秒内没有收到心跳包的课堂里的成员
+   ClassMember::exitDeathRoomMember(30,Account::ACCOUNT_ROLE_STUDENT);
+
+   //删掉很久以前的课程成员信息
+   ClassMember::delOldRoomMember(3600*24*60);
 }
 
 ini_set('date.timezone','Asia/Shanghai');

@@ -67,7 +67,7 @@ class CreateLiveRoomCmd extends TokenCmd
         $room_id = $this->course->getRoomId();
         
         //新创建的是全新的课程,清理掉课程表中的成员
-        ClassMember::ClearRoomByRoomNum($room_id);
+        ClassMember::delAllUsersFromRoom($room_id);
         
         //更新im群号.当前课程号和im群号值一样,类型不一样
         $data = array();
@@ -82,7 +82,7 @@ class CreateLiveRoomCmd extends TokenCmd
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
         $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $this->course->update($room_id,$data); 
-        if ($ret<=0)
+        if ($ret<0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }

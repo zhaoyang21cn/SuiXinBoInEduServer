@@ -109,8 +109,17 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $customMsg["MsgSeqStart"]=(int)$this->course->getStartImSeq();
         $customMsg["MsgSeqEnd"]=(int)$this->course->getEndImSeq();
         $customMsg["MaxMsgSeqVideoEnd"]=(int)$this->course->getLastRecImSeq();
-        //需要录制的成员列表暂时只列老师.
-        $customMsg["UserList"][0]=array('Account' =>$this->userName);
+
+        //获取房间全部成员列表
+        $recordList = ClassMember::getAllHistoryList($this->course->getRoomID(),0,500);
+        if (is_null($recordList)) {
+            return new CmdResp(ERR_SERVER, 'Server error: get course member list fail');
+        }
+        $UserList = array();
+        foreach ($recordList as $record) {
+            array_push($UserList,array('Account' => $record['uid']));
+        }
+        $customMsg["UserList"]=$UserList;
         $ret = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg);
         if($ret<0)
         {
@@ -122,7 +131,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
         $ret = $this->course->update($this->course->getRoomID(),$data); 
-        if ($ret<=0)
+        if ($ret<0)
         {
             return new CmdResp(ERR_SERVER, 'Server internal error: update room info failed');
         }

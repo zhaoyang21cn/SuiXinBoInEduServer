@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS `t_course` (
 CREATE TABLE IF NOT EXISTS `t_class_member` (
  `uin`   int(11)      NOT  NULL DEFAULT  0  COMMENT '成员id',            
  `room_id`   int(11)      NOT  NULL DEFAULT  0  COMMENT '成员所在房间ID',            
+ `has_exited`   int(11)      NOT  NULL DEFAULT  0  COMMENT '该成员是否已经退出此房间', 
  `last_heartbeat_time`  int(11)      NOT  NULL DEFAULT  0   COMMENT '成员心跳时间戳',           
   PRIMARY KEY (`uin`,`room_id`)
 );
