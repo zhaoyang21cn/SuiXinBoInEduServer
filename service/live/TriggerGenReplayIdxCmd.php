@@ -110,7 +110,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $customMsg["MsgSeqEnd"]=(int)$this->course->getEndImSeq();
         $customMsg["MaxMsgSeqVideoEnd"]=(int)$this->course->getLastRecImSeq();
         //需要录制的成员列表暂时只列老师.
-        $customMsg["UserList"]=array('Account' =>$this->userName);
+        $customMsg["UserList"][0]=array('Account' =>$this->userName);
         $ret = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg);
         if($ret<0)
         {

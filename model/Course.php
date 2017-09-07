@@ -301,8 +301,11 @@ class Course
         $fields = array(
             self::FIELD_ROOM_ID,
             self::FIELD_CREATE_TIME,
-            self::FIELD_START_TIME,          
-            self::FIELD_END_TIME,          
+            self::FIELD_START_TIME,
+            self::FIELD_START_IMSEQ,
+            self::FIELD_END_TIME,
+            self::FIELD_END_IMSEQ,
+            self::FIELD_LAST_REC_IMSEQ,
             self::FIELD_LAST_UPDATE_TIME,
             self::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME,
             self::FIELD_TRIGGER_REPLAY_IDX_TIME,
@@ -392,7 +395,7 @@ class Course
             self::FIELD_ROOM_ID => $this->room_id,
             self::FIELD_CREATE_TIME => $this->createTime,
             self::FIELD_START_TIME => $this->startTime,
-            self::FIELD_START_IMSSEQ => $this->startImSeq,
+            self::FIELD_START_IMSEQ => $this->startImSeq,
             self::FIELD_END_TIME => $this->endTime,
             self::FIELD_END_IMSEQ => $this->endImSeq,
             self::FIELD_LAST_REC_IMSEQ => $this->lastRecImSeq,
@@ -501,7 +504,7 @@ class Course
         {
             $whereSql.=" and start_time<=$toTime";
         }
-        
+
         //记录从数据库取到的记录
         $rows = array();
 
@@ -528,7 +531,7 @@ class Course
             b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
             b.end_time as end_time,b.end_imseq as end_imseq,b.last_rec_imseq as last_rec_imseq,
             b.can_trigger_replay_idx_time as can_trigger_replay_idx_time,b.trigger_replay_idx_time as trigger_replay_idx_time '.
-                   ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time,b.create_time DESC LIMIT ' .
+                   ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time DESC,b.create_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
             $result = $stmt->execute();
