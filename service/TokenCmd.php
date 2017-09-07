@@ -1,53 +1,21 @@
 <?php
 
 /**
- * Tips：相比Cmd类，主要增加Token过期验证，并将用户token转换成用户名
+ * 相比Cmd类，主要增加Token过期验证，并将用户token转换成用户名
  */
 
 require_once dirname(__FILE__) . '/../Config.php';
+require_once 'AbstractCmd.php';
 require_once 'CmdResp.php';
 require_once MODEL_PATH . '/Account.php';
 
-abstract class TokenCmd
+abstract class TokenCmd extends AbstractCmd
 {
-    protected $logstr;
-
-    protected $req;
     protected $account; //信令发起方的账户信息
     protected $uin;
     protected $userName;
     protected $appID;
     protected $timeStamp;
-
-    private function loadJsonReq()
-    {
-        $data = file_get_contents('php://input');
-        if (empty($data)) {
-            $this->req = array();
-            return true;
-        }
-        // 最大递归层数为12
-        $this->req = json_decode($data, true, 12);
-        //var_dump($this->req);
-        //var_dump($data);
-        //exit(0);
-        return is_null($this->req) ? false : true;
-    }
-
-    abstract public function parseInput();
-
-    abstract public function handle();
-
-    public static function makeResp($errorCode, $errorInfo, $data = null)
-    {
-        $reply = array();
-        if (is_array($data)) {
-            $reply = $data;
-        }
-        $reply['errorCode'] = $errorCode;
-        $reply['errorInfo'] = $errorInfo;
-        return $reply;
-    }
 
     public final function execute()
     {
@@ -132,9 +100,5 @@ abstract class TokenCmd
         }
         $resp = $this->handle();
         return $resp;
-    }
-    public final function getLog()
-    {
-        return $this->logstr;
     }
 }

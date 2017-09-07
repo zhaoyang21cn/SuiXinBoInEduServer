@@ -1,5 +1,6 @@
 <?php
 /**
+ * [        * * * * * /usr/bin/php /data/SuiXinBoInEduServer/cron/ClearDeath.php > /dev/null 2>&1 &       ]
  */
 
 require_once  __DIR__ . '/../Path.php';
