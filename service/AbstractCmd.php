@@ -2,6 +2,7 @@
 
 require_once dirname(__FILE__) . '/../Config.php';
 require_once 'CmdResp.php';
+require_once LIB_PATH . '/log/Log.php';
 
 /**
  * 最顶层的Cmd类. 用于规范接口. Cmd,SimpleCmd,TokenCmd 的父类
@@ -9,6 +10,7 @@ require_once 'CmdResp.php';
 abstract class AbstractCmd
 {
     protected $logstr;
+    protected $loglevel=LogLevel::INFO;
     protected $req;
 
     protected function loadJsonReq()
@@ -51,5 +53,17 @@ abstract class AbstractCmd
     public final function getLog()
     {
         return $this->logstr;
+    }
+    public final function getLogLevel()
+    {
+        if(is_null($this->loglevel))
+        {
+            $this->loglevel=LogLevel::INFO;
+        }
+        return $this->loglevel;
+    }
+    public final function setLogLevel($level)
+    {
+        $this->loglevel=$level;
     }
 }

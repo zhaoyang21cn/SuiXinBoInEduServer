@@ -38,6 +38,9 @@ class HeartBeatCmd extends TokenCmd
 
     public function handle()
     {
+        //心跳包量多,日志以debug级别打印.
+        $this->setLogLevel(LogLevel::DEBUG);
+        
         $course = new Course();
         $course->setRoomID($this->roomnum);
         

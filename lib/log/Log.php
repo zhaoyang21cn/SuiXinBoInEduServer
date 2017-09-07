@@ -110,5 +110,10 @@ class Log
     {
         self::$instance->writeLog(LogLevel::ERROR, $msg);
     }
-
+    
+    //返回实例
+    public static function instance()
+    {
+        return self::$instance;
+    }
 }

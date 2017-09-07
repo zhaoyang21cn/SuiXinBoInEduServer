@@ -25,12 +25,19 @@ class Server
         $req_str = file_get_contents('php://input');
         $rsp_str = json_encode($reply);
         $strlog="";
+        $loglevel=LogLevel::INFO;
         if(!is_null($this->cmdHandle) && !empty($this->cmdHandle) && is_object($this->cmdHandle))
         {
             $strlog=$this->cmdHandle->getLog();
+            $loglevel=$this->cmdHandle->getLogLevel();
         }
-        Log::info('svc=' . $svc .',cmd=' . $cmd . ',time=' . round(($this->endMsec - $this->startMsec)*1000) . 
-        " msec,".$strlog." req:" . $req_str.",rsp_str:".$rsp_str);
+        if(array_key_exists("errorCode",$reply) && $reply["errorCode"]!=ERR_SUCCESS)
+        {
+            $loglevel=LogLevel::ERROR;
+        }
+        Log::instance()->writeLog($loglevel,'svc=' . $svc .',cmd=' . $cmd . ',time=' . 
+            round(($this->endMsec - $this->startMsec)*1000) . " msec,".$strlog." req:" . 
+            $req_str.",rsp_str:".$rsp_str);
         echo $rsp_str;
     }
 
@@ -39,7 +46,9 @@ class Server
         $this->startMsec=microtime(true);
 
         $handler = new FileLogHandler(LOG_PATH . '/sxb_' . date('Y-m-d') . '.log');
-        Log::init($handler);
+        //LogLevel::DEBUG的日志不打印
+        $level=(LogLevel::INFO | LogLevel::WARN | LogLevel::ERROR);
+        Log::init($handler,$level);
         if (!isset($_REQUEST['svc']) || !isset($_REQUEST['cmd']))
         {
             $this->sendResp(
