@@ -77,7 +77,6 @@ class BindFile
             $result = $stmt->execute($fields);
             if (!$result)
             {
-                //var_dump($stmt->errorInfo());
                 return -1;
             }
             return $dbh->lastInsertId();

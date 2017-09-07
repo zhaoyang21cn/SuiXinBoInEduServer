@@ -258,17 +258,21 @@ class Course
         }
         try
         {
-            $sql = 'INSERT INTO t_course (host_uin, create_time,title,cover,state) 
-            VALUES (:host_uin, :create_time,:title,:cover,'.self::COURSE_STATE_CREATED.')';
+            $sql = 'INSERT INTO t_course (host_uin, create_time,title,cover,state,replay_idx_url) 
+            VALUES (:host_uin, :create_time,:title,:cover,'.self::COURSE_STATE_CREATED.',:replay_idx_url)';
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':host_uin', $this->hostUin, PDO::PARAM_INT);
             $stmt->bindParam(':create_time', date('U'), PDO::PARAM_INT);
             $stmt->bindParam(':title',$this->title, PDO::PARAM_STR);
             $stmt->bindParam(':cover',$this->cover, PDO::PARAM_STR);
+            $replay_idx_url="";
+            $stmt->bindParam(':replay_idx_url',$replay_idx_url, PDO::PARAM_STR);
             $result = $stmt->execute();
             if (!$result)
             {
-                return -1;
+                $this->errorCode=$stmt->errorCode();
+                $this->grrorInfo=$stmt->errorInfo();
+                return -2;
             }
 
             $this->room_id = $dbh->lastInsertId();
@@ -277,9 +281,9 @@ class Course
         }
         catch (PDOException $e)
         {
-            return -1;
+            return -3;
         }
-        return -1;
+        return -4;
     }
 
 

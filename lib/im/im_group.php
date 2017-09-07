@@ -4,6 +4,7 @@
  *
  */
 require_once dirname(__FILE__) . '/../../Path.php';
+require_once ROOT_PATH . '/Config.php';
 require_once DEPS_PATH . '/PhpServerSdk/TimRestApi.php';
 
 class ImGroup
@@ -13,7 +14,7 @@ class ImGroup
         $appAdmins = unserialize(GLOBAL_CONFIG_SDK_ADMIN);
         $identifier = $appAdmins[$sdkAppID];
         $private_key_path = KEYS_PATH . '/' . $sdkAppID . '/private_key'; 
-        $signature = DEPS_PATH ."/PhpServerSdk/signature/linux-signature64";
+        $signature_tool = DEPS_PATH ."/PhpServerSdk/signature/linux-signature64";
 
         // 初始化API
         $api = createRestAPI();
@@ -22,7 +23,7 @@ class ImGroup
         //set_user_sig可以设置已有的签名
         //$api->set_user_sig($this->account->getUserSig());
         //生成签名，有效期一天
-        $ret = $api->generate_user_sig($identifier, '86400', $private_key_path, $signature);
+        $ret = $api->generate_user_sig($identifier, '86400', $private_key_path, $signature_tool);
         if ($ret == null)
         {
             return -1;

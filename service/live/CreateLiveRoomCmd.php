@@ -60,7 +60,7 @@ class CreateLiveRoomCmd extends TokenCmd
         $ret = $this->course->create();
         if ($ret<=0)
         {
-            return new CmdResp(ERR_SERVER, 'Server internal error: create room fail');
+            return new CmdResp(ERR_SERVER, 'Server internal error: create room fail,inner code '.$ret);
         }
 
         //房间id

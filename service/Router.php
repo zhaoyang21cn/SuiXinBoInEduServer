@@ -30,6 +30,9 @@ class Router
             //播片/课件 关联
             'reportbind' => 'ReportBindResourceCmd',
             'querybind' => 'QueryBindResourceCmd',
+            
+            //客户端索引文件生成接口
+            'makereplayidx' => 'TriggerGenReplayIdxCmd',
 
             //录制回调函数
             'reccall' => 'RecCallbackCmd',
