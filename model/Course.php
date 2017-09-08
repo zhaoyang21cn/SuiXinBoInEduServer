@@ -528,8 +528,7 @@ class Course
             $totalCount=$stmt->fetch()['total'];
 
             $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,
-            b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.start_imseq as start_imseq,
-            b.end_time as end_time,b.end_imseq as end_imseq,b.last_rec_imseq as last_rec_imseq,
+            b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.end_time as end_time,
             b.can_trigger_replay_idx_time as can_trigger_replay_idx_time,b.trigger_replay_idx_time as trigger_replay_idx_time '.
                    ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time DESC,b.create_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
@@ -554,6 +553,15 @@ class Course
         $data = array();
         foreach ($rows as $row)
         {
+            $can_triger_replay_idx=0;
+            if($row['state']==self::COURSE_STATE_HAS_LIVED 
+                && $row['can_trigger_replay_idx_time']!=0
+                && $row['can_trigger_replay_idx_time']+1<date('U')
+                && $row['trigger_replay_idx_time']==0)
+            {
+                $can_triger_replay_idx=1;
+            }
+
             $data[] = array(
                 'host_uid' => $row['uid'],
                 'title' => $row['title'],
@@ -563,12 +571,10 @@ class Course
                 'cover' => $row['cover'],
                 'replay_idx_url' => $row['replay_idx_url'],
                 'begin_time' => (int)$row['start_time'],
-                'begin_imseq' => (int)$row['start_imseq'],
                 'end_time' => (int)$row['end_time'],
-                'end_imseq' => (int)$row['end_imseq'],
-                'last_rec_imseq' => (int)$row['last_rec_imseq'],
-                'can_trigger_replay_idx_time' => (int)$row['can_trigger_replay_idx_time'],
+                'can_trigger_replay_idx' => (int)$can_triger_replay_idx,
                 'trigger_replay_idx_time' => (int)$row['trigger_replay_idx_time'],
+                'trigger_replay_idx_result' => (int)0,
              );
         }
         return $data;

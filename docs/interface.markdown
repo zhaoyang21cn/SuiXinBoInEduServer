@@ -373,12 +373,10 @@ state取值 | 描述
              "cover":"http://cover.png",
              "replay_idx_url":"http://xxxxx",
              "begin_time":145668974,
-             "begin_imseq":145,
              "end_time":145668974,
-             "end_imseq":1456,
-             "last_rec_imseq":1456,
-             "can_trigger_replay_idx_time":0,
-             "trigger_replay_idx_time",0,
+             "can_trigger_replay_idx":0,
+             "trigger_replay_idx_time":145668974,
+             "trigger_replay_idx_result":0,
              "memsize":23
         },
         {
@@ -390,12 +388,10 @@ state取值 | 描述
             "cover":"http://cover.png",
             "replay_idx_url":"",
             "begin_time":145668974,
-            "begin_imseq":145,
             "end_time":145668974, 
-            "end_imseq":1456,
-            "last_rec_imseq":1456,
-            "can_trigger_replay_idx_time":0,
-            "trigger_replay_idx_time",0,
+            "can_trigger_replay_idx":0,
+            "trigger_replay_idx_time":145668974,
+            "trigger_replay_idx_result":0,
             "memsize":23
         }
     ]}
@@ -419,12 +415,10 @@ groupid|String|必填|群组id
 cover|String| 选填|封面地址
 replay_idx_url|String| 选填|回放索引文件地址
 begin_time|Integer|必填|课程开始时间(1970年1月1日以来的秒数)
-begin_imseq|Integer|必填|课程开始时对应的im消息的seqno
 end_time|Integer|必填|课程结束时间(1970年1月1日以来的秒数)
-end_imseq|Integer|必填|课程结束时时对应的im消息的seqno
-last_rec_imseq|Integer|必填|最近一次录制结束对应的im消息的seqno
-can_trigger_replay_idx_time|Integer|必填|可以触发索引文件生成指令的时间(1970年1月1日以来的秒数).</br>此字段非0,且小于当前时间才可以发送生成回放索引的指令
+can_trigger_replay_idx|Integer|必填|是否可以发送生成回放索引的指令,0为不可以,1为可以
 trigger_replay_idx_time|Integer|必填|触发索引文件生成指令的时间(1970年1月1日以来的秒数)
+trigger_replay_idx_result|Integer|必填|触发索引文件生成指令的结果
 memsize|Integer|必填|课程参与人数
 
 ### 上报房间成员变化(成员进出房间)

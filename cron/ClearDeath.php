@@ -14,7 +14,8 @@ require_once LIB_PATH . '/log/Log.php';
 function clear()
 {
     //初始化日志,清掉的房间记录日志,备查
-    $handler = new FileLogHandler(LOG_PATH . '/sxb_' . date('Y-m-d') . '.log');
+    //注,日志需要单独的日志文件.否则需要和nginx的用户一致避免存在权限问题
+    $handler = new FileLogHandler(LOG_PATH . '/sxbcron_' . date('Y-m-d') . '.log');
     Log::init($handler);
 
    //找出N秒无心跳的直播课堂
