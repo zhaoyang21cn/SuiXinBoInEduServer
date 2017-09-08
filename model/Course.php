@@ -498,11 +498,11 @@ class Course
         }
         if($fromTime>0)
         {
-            $whereSql.=" and start_time>$fromTime";
+            $whereSql.=" and (start_time>$fromTime or create_time>$fromTime)";
         }
         if($toTime>0)
         {
-            $whereSql.=" and start_time<=$toTime";
+            $whereSql.=" and (start_time<=$toTime or create_time<=$toTime)";
         }
 
         //记录从数据库取到的记录
@@ -528,9 +528,10 @@ class Course
             $totalCount=$stmt->fetch()['total'];
 
             $sql = 'SELECT a.uid as uid,b.title as title,b.room_id as room_id,b.state as state,b.im_group_id as im_group_id,
-            b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.end_time as end_time,
-            b.can_trigger_replay_idx_time as can_trigger_replay_idx_time,b.trigger_replay_idx_time as trigger_replay_idx_time '.
-                   ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY b.start_time DESC,b.create_time DESC LIMIT ' .
+                b.cover as cover,b.replay_idx_url as replay_idx_url,b.start_time as start_time,b.end_time as end_time,
+                b.can_trigger_replay_idx_time as can_trigger_replay_idx_time,b.trigger_replay_idx_time as trigger_replay_idx_time,
+                if(b.create_time>b.start_time,b.create_time,b.start_time) as inner_order_time '.
+                ' FROM t_course b,t_account a ' . $whereSql . ' ORDER BY inner_order_time DESC LIMIT ' .
                    (int)$offset . ',' . (int)$limit;
             $stmt = $dbh->prepare($sql);
             $result = $stmt->execute();
