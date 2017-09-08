@@ -366,7 +366,7 @@ state取值 | 描述
 	"total":100,
  	"rooms":[{
             "host_uid":"[uid]",
-          	"title": "标题",
+            "title": "标题",
             "state":3,
             "roomnum":18,
             "groupid":"18",

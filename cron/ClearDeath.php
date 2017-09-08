@@ -38,7 +38,7 @@ function clear()
             $data[course::FIELD_END_TIME] = date('U');
             $ret = Course::update($roomID,$data);
 
-            Log::info("crontab, clear room".$roomID);
+            Log::info("crontab, exit all users of room".$roomID);
         }
    }
 
