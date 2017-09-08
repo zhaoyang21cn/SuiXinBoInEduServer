@@ -365,33 +365,37 @@ state取值 | 描述
 	"data":{
 	"total":100,
  	"rooms":[{
-		     "host_uid":"[uid]",
-          	 "title": "标题",
-             "state":3,
-             "roomnum":18,
-             "groupid":"18",
-             "cover":"http://cover.png",
-             "replay_idx_url":"http://xxxxx",
-             "begin_time":145668974,
-             "end_time":145668974,
-             "can_trigger_replay_idx":0,
-             "trigger_replay_idx_time":145668974,
-             "trigger_replay_idx_result":0,
-             "memsize":23
+            "host_uid":"[uid]",
+          	"title": "标题",
+            "state":3,
+            "roomnum":18,
+            "groupid":"18",
+            "cover":"http://cover.png",
+            "begin_time":145668974,
+            "end_time":145668974,
+            "can_trigger_replay_idx":0,
+            "trigger_replay_idx_time":145668974,
+            "trigger_replay_idx_result":0,
+            "replay_idx_created_time":145668974,
+            "replay_idx_created_result":0,
+            "replay_idx_url":"http://xxxxx",
+            "memsize":23
         },
         {
-		    "host_uid":"[uid]",
+            "host_uid":"[uid]",
             "title": "标题",
             "state":0,
             "roomnum":19,
             "groupid":"19",
             "cover":"http://cover.png",
-            "replay_idx_url":"",
             "begin_time":145668974,
             "end_time":145668974, 
             "can_trigger_replay_idx":0,
             "trigger_replay_idx_time":145668974,
             "trigger_replay_idx_result":0,
+            "replay_idx_created_time":145668974,
+            "replay_idx_created_result":0,
+            "replay_idx_url":"",
             "memsize":23
         }
     ]}
@@ -413,12 +417,14 @@ state|Interger|必填|课程状态
 roomnum|Integer|必填|房间id
 groupid|String|必填|群组id
 cover|String| 选填|封面地址
-replay_idx_url|String| 选填|回放索引文件地址
 begin_time|Integer|必填|课程开始时间(1970年1月1日以来的秒数)
 end_time|Integer|必填|课程结束时间(1970年1月1日以来的秒数)
 can_trigger_replay_idx|Integer|必填|是否可以发送生成回放索引的指令,0为不可以,1为可以
 trigger_replay_idx_time|Integer|必填|触发索引文件生成指令的时间(1970年1月1日以来的秒数)
 trigger_replay_idx_result|Integer|必填|触发索引文件生成指令的结果
+replay_idx_created_time|Integer|必填|索引文件最终生成生成的时间(1970年1月1日以来的秒数)
+replay_idx_created_result|Integer|必填|索引文件最终生成生成的结果
+replay_idx_url|String| 选填|回放索引文件地址
 memsize|Integer|必填|课程参与人数
 
 ### 上报房间成员变化(成员进出房间)

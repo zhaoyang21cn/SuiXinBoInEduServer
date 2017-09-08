@@ -569,12 +569,14 @@ class Course
                 'state' => (int)$row['state'],
                 'groupid' => $row['im_group_id'],
                 'cover' => $row['cover'],
-                'replay_idx_url' => $row['replay_idx_url'],
                 'begin_time' => (int)$row['start_time'],
                 'end_time' => (int)$row['end_time'],
                 'can_trigger_replay_idx' => (int)$can_triger_replay_idx,
                 'trigger_replay_idx_time' => (int)$row['trigger_replay_idx_time'],
                 'trigger_replay_idx_result' => (int)0,
+                'replay_idx_created_time' => (int)0,
+                'replay_idx_created_result' => (int)0,
+                'replay_idx_url' => $row['replay_idx_url'],
              );
         }
         return $data;
