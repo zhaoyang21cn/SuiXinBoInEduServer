@@ -34,7 +34,7 @@ class ImGroup
         $msg_content_elem = array(
                 'MsgType' => 'TIMCustomElem',       //文本类型
                 'MsgContent' => array(
-                    'data' => json_encode($customMsg),
+                    'Data' => json_encode($customMsg),
                     )
                 );
         array_push($msg_content, $msg_content_elem);

@@ -62,6 +62,7 @@ class StartCourseCmd extends TokenCmd
         $customMsg["seq"]=rand(10000, 100000000);
         $customMsg["timestamp"]=$this->timeStamp;
         $customMsg["value"]=array('uid' =>$this->userName);
+        $this->logstr.=("|imseq=".$customMsg["seq"]."|imtimstamp=".$this->timeStamp);
         $ret = ImGroup::SendCustomMsg($this->appID,(string)$this->course->getRoomID(),$customMsg);
         if($ret<0)
         {
