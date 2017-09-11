@@ -20,7 +20,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
 
     private $course;
 
-    public function TriggerReplayIdx($sdkAppID,$groupNum,$customMsg)
+    public function TriggerReplayIdx($sdkAppID,$groupNum,$customMsg,&$errorCode,&$errorInfo)
     {
         $appAdmins = unserialize(GLOBAL_CONFIG_SDK_ADMIN);
         $identifier = $appAdmins[$sdkAppID];
@@ -53,6 +53,8 @@ class TriggerGenReplayIdxCmd extends TokenCmd
             return -2;
         }
         $ret = json_decode($ret, true);
+        $errorCode=$ret["ErrorCode"];
+        $errorInfo=$ret["ErrorInfo"];
         if($ret["ErrorCode"]!=0)
         {
             return -3;
@@ -109,6 +111,9 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $customMsg["MsgSeqStart"]=(int)$this->course->getStartImSeq();
         $customMsg["MsgSeqEnd"]=(int)$this->course->getEndImSeq();
         $customMsg["MaxMsgSeqVideoEnd"]=(int)$this->course->getLastRecImSeq();
+        $logstr="|startimseq=".$this->course->getStartImSeq()."|endimseq="
+            .$this->course->getEndImSeq()."|maxrecimseq=".$this->course->getLastRecImSeq();
+        $this->logstr.=$logstr;
 
         //获取房间全部成员列表
         $recordList = ClassMember::getAllHistoryList($this->course->getRoomID(),0,500);
@@ -120,10 +125,13 @@ class TriggerGenReplayIdxCmd extends TokenCmd
             array_push($UserList,array('Account' => $record['uid']));
         }
         $customMsg["UserList"]=$UserList;
-        $ret = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg);
+        $errorCode=0;
+        $errorInfo="";
+        $ret = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg,$errorCode,$errorInfo);
         if($ret<0)
         {
-            return new CmdResp(ERR_SEND_IM_MSG, 'send req to replay idex server failed,inner code '.$ret);
+            return new CmdResp(ERR_SEND_IM_MSG, 'send req to replay idex server failed,inner code '.$ret.
+                ',idx server detail[code:'.$errorCode.',info:'.$errorInfo.']');
         }
 
         //更新课程信息
