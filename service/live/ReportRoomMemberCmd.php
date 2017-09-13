@@ -87,6 +87,37 @@ class ReportRoomMemberCmd extends TokenCmd
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'room is not exist'); 
         }
 
+        //检查当前成员是否在课堂中
+        $usrInfo=array();
+        $checkClassMemberRet=ClassMember::getUserInfo($this->roomNum,$this->account->getUin(),$usrInfo);
+        if($checkClassMemberRet<0)
+        {
+            return new CmdResp(ERR_SERVER, 'check class member info failed.inner code:'.$checkClassMemberRet); 
+        }
+
+        //重复进
+        if($this->operate == self::OPERATE_ENTER 
+            && $checkClassMemberRet>0 
+            && array_key_exists("has_exited",$usrInfo)
+            && $usrInfo["has_exited"]==ClassMember::HAS_EXITED_NO)
+        {
+            return new CmdResp(ERR_REPEATE_ENTER, 'can not repeat enter a room.'); 
+        }
+
+        //不在房间,但是退出
+        if($this->operate == self::OPERATE_EXIT 
+            && $checkClassMemberRet==0) 
+        {
+            return new CmdResp(ERR_REPEATE_EXIT, 'can not repeat exit a room.'); 
+        }
+        if($this->operate == self::OPERATE_EXIT 
+            && $checkClassMemberRet>0 
+            && array_key_exists("has_exited",$usrInfo)
+            && $usrInfo["has_exited"]==ClassMember::HAS_EXITED_YES)
+        {
+            return new CmdResp(ERR_REPEATE_EXIT, 'can not repeat exit a room.'); 
+        }
+
         $ret = false;
         if($this->operate == self::OPERATE_ENTER) //成员进入房间
         {

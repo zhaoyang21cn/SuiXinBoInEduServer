@@ -22,5 +22,7 @@ define('ERR_ROOM_STATE', 10102); //当前房间状态不适合本操作
 define('ERR_SEND_IM_MSG', 10103); //发送IM消息失败
 define('ERR_REPEAT_BIND', 10104); //课件重复绑定
 define('ERR_RESOURCE_STATE', 10105); //课件状态不适合本操作
+define('ERR_REPEATE_ENTER', 10106); //重复进入房间
+define('ERR_REPEATE_EXIT', 10107); //重复退出房间
 
 define('ERR_SERVER', 90000);  // 服务器内部错误

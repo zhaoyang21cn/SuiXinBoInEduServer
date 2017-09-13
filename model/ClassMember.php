@@ -500,6 +500,43 @@ class ClassMember
             return -1;
         }
     }
+
+    /* 功能：查看房间中用户的信息.
+     * 说明：成功：用户不存在0,用户存在>0, 且&$usrInfo返回用户的信息array,失败:<0
+     */
+    public static function getUserInfo($room_id,$uin,&$usrInfo)
+    {
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            return -1;
+        }
+        try
+        {
+            $sql = 'select uin,room_id,has_exited,last_heartbeat_time from t_class_member ';
+            $sql .= ' WHERE ' . self::FIELD_ROOM_ID . ' = :'.self::FIELD_ROOM_ID.' and '.self::FIELD_UIN . '=:'.self::FIELD_UIN;
+            $stmt = $dbh->prepare($sql);
+            $fields[self::FIELD_ROOM_ID]=$room_id;
+            $fields[self::FIELD_UIN]=$uin;
+            $result = $stmt->execute($fields);
+            if (!$result)
+            {
+                return -2;
+            }
+            $rows = $stmt->fetchAll();
+            if (empty($rows) || sizeof($rows)<=0)
+            {
+                $usrInfo=array();
+                return 0;
+            }
+            $usrInfo=$rows[0];
+            return 1;
+        }
+        catch (PDOException $e)
+        {
+            return -3;
+        }
+    }
 }
 
 ?>
