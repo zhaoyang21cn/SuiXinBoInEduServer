@@ -9,6 +9,7 @@ require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
 require_once MODEL_PATH . '/Course.php';
 require_once MODEL_PATH . '/Account.php';
+require_once MODEL_PATH . '/ClassMember.php';
 require_once LIB_PATH . '/im/im_group.php';
 
 require_once LIB_PATH . '/log/FileLogHandler.php';
