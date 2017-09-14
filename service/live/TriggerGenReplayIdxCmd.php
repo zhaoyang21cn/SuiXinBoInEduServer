@@ -127,10 +127,16 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $customMsg["UserList"]=$UserList;
         $errorCode=0;
         $errorInfo="";
-        $ret = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg,$errorCode,$errorInfo);
-        if($ret<0)
+        $retTrig = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg,$errorCode,$errorInfo);
+        if($retTrig<0)
         {
-            return new CmdResp(ERR_SEND_IM_MSG, 'send req to replay idex server failed,inner code '.$ret.
+            //更新课程信息
+            $data = array();
+            $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = date('U');
+            $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
+            $data[course::FIELD_TRIGGER_REPLAY_IDX_RESULT] = $retTrig;
+            $ret = $this->course->update($this->course->getRoomID(),$data); 
+            return new CmdResp(ERR_SEND_IM_MSG, 'send req to replay idex server failed,inner code '.$retTrig.
                 ',idx server detail[code:'.$errorCode.',info:'.$errorInfo.']');
         }
 
@@ -138,6 +144,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $data = array();
         $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
+        $data[course::FIELD_TRIGGER_REPLAY_IDX_RESULT] = 0;
         $ret = $this->course->update($this->course->getRoomID(),$data); 
         if ($ret<0)
         {

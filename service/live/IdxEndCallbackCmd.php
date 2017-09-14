@@ -69,6 +69,8 @@ class IdxEndCallbackCmd extends SimpleCmd
         $data[course::FIELD_REPLAY_IDX_URL] = $this->replayIdxUrl;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
+        $data[course::FIELD_REPLAY_IDX_CREATED_TIME] = date('U');
+        $data[course::FIELD_REPLAY_IDX_CREATED_RESULT] = 0;
         $ret = $course->update($this->roomNum,$data); 
         if ($ret<0)
         {
