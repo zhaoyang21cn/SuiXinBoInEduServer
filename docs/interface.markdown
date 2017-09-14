@@ -872,6 +872,7 @@ index.php?svc=live&cmd=reccall
 ```
 * 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
 
+
 ### 索引文件生成完成回调接口
 
 * 接收索引文件生成服务器回调的通知
@@ -881,26 +882,5 @@ index.php?svc=live&cmd=reccall
 ```php
 index.php?svc=live&cmd=idxfileendcall
 ```
-* request字段示例
-
-```json
- {
-	"groupid":"123",
-    "replayIdxUrl":"www.xxx.com"
- }
-```
-
-字段  | 类型  | 选项 | 说明
-:-----: | :-----: | :-----: | :-----: 
-groupid|String|必填|IM群号
-replayIdxUrl|String|必填|回放索引文件地址
-
-* response字段示例
-
-```json
- {  "errorCode": 0,
-	"errorInfo": ""
- }
-
-```
+* 这是腾讯视频云后台调用业务后台推送通知的接口，具体处理方式请参考文档和代码
 
