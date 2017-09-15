@@ -1,7 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../Config.php';
-require_once 'CmdResp.php';
 require_once LIB_PATH . '/log/Log.php';
 
 /**
@@ -39,18 +38,6 @@ abstract class AbstractCmd
 
     abstract public function handle();
     
-    public static function makeResp($errorCode, $errorInfo, $data = null)
-    {
-        $reply = array();
-        if (is_array($data))
-        {
-            $reply = $data;
-        }
-        $reply['errorCode'] = $errorCode;
-        $reply['errorInfo'] = $errorInfo;
-        return $reply;
-    }
-
     abstract public function execute();
 
     public final function getLog()

@@ -2,8 +2,8 @@
 
 require_once dirname(__FILE__) . '/../Path.php';
 require_once SERVICE_PATH . '/Router.php';
-require_once SERVICE_PATH . '/Cmd.php';
-require_once SERVICE_PATH . '/CmdResp.php';
+require_once SERVICE_PATH . '/AbstractCmd.php';
+require_once SERVICE_PATH . '/AbstractCmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
 require_once LIB_PATH . '/log/FileLogHandler.php';
 require_once LIB_PATH . '/log/Log.php';

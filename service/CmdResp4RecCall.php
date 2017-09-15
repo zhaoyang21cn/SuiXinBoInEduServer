@@ -4,7 +4,7 @@ require_once 'AbstractCmdResp.php';
 /**
  * 
  */
-class CmdResp extends AbstractCmdResp
+class CmdResp4RecCall extends AbstractCmdResp
 {
     /**
      * @return array
@@ -13,12 +13,8 @@ class CmdResp extends AbstractCmdResp
     {
         $data = $this->data;
         $result = array();
-        $result['errorCode'] = $this->getErrorCode();
-        $result['errorInfo'] = $this->getErrorInfo();
-        if (is_array($data))
-        {
-            $result['data'] = $data;
-        }
+        //$result['code'] = $this->getErrorCode();
+        $result['code'] = 0;
         return $result;
     }
 }
