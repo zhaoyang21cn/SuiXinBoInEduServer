@@ -132,11 +132,19 @@ class RecCallbackCmd extends SimpleCmd
                     return new CmdResp(ERR_REQ_DATA, 'event100 lack of stream_param.groupid');
                 }
                 $this->groupId = $parr['groupid'];
-                if (!isset($parr['uid']))
+                if (!isset($parr['userid']))
                 {
-                    return new CmdResp(ERR_REQ_DATA, 'event100 lack of stream_param.uid');
+                    return new CmdResp(ERR_REQ_DATA, 'event100 lack of stream_param.userid');
                 }
-                $this->uid = $parr['uid'];
+                //stream_param.userid 是base64的.先解密
+                $userid_decode = '';
+                $cmd = 'echo "' . $parr['userid'] . '" | base64 -d ';
+                $ret = exec($cmd, $userid_decode, $status);
+                if($status != 0)
+                {
+                    return new CmdResp(ERR_REQ_DATA, 'decode stream_param.userid error');
+                }
+                $this->uid = $userid_decode[0];
             }
         }
         return new CmdResp(ERR_SUCCESS, '');
