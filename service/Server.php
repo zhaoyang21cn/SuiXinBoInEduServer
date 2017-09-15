@@ -26,18 +26,23 @@ class Server
         $rsp_str = json_encode($reply);
         $strlog="";
         $loglevel=LogLevel::INFO;
+        $logOn=true;
         if(!is_null($this->cmdHandle) && !empty($this->cmdHandle) && is_object($this->cmdHandle))
         {
             $strlog=$this->cmdHandle->getLog();
             $loglevel=$this->cmdHandle->getLogLevel();
+            $logOn=$this->cmdHandle->ifLogOn();
         }
         if(array_key_exists("errorCode",$reply) && $reply["errorCode"]!=ERR_SUCCESS)
         {
             $loglevel=LogLevel::ERROR;
         }
-        Log::instance()->writeLog($loglevel,'svc=' . $svc .',cmd=' . $cmd . ',time=' . 
-            round(($this->endMsec - $this->startMsec)*1000) . " msec,".$strlog." req:" . 
-            $req_str.",rsp_str:".$rsp_str);
+        if($logOn)
+        {
+            Log::instance()->writeLog($loglevel,'svc=' . $svc .',cmd=' . $cmd . ',time=' . 
+                    round(($this->endMsec - $this->startMsec)*1000) . " msec,".$strlog." req:" . 
+                    $req_str.",rsp_str:".$rsp_str);
+        }
         echo $rsp_str;
     }
 

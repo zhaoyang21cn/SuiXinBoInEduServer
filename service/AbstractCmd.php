@@ -11,10 +11,13 @@ abstract class AbstractCmd
 {
     protected $logstr;
     protected $loglevel=LogLevel::INFO;
+    protected $logOn=1;
     protected $req;
 
     protected function loadJsonReq()
     {
+        $this->loadConfigure();
+        
         $data = file_get_contents('php://input');
         if (empty($data))
         {
@@ -65,5 +68,23 @@ abstract class AbstractCmd
     public final function setLogLevel($level)
     {
         $this->loglevel=$level;
+    }
+
+    public final function ifLogOn()
+    {
+        return $this->logOn;
+    }
+    public final function setLogOff()
+    {
+        $this->logOn=0;
+    }
+    public final function setLogOn()
+    {
+        $this->logOn=1;
+    }
+
+    //这个函数在最先执行,做一些基础配置.比如日志级别
+    protected function loadConfigure()
+    {
     }
 }
