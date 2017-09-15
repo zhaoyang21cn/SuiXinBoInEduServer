@@ -19,8 +19,12 @@ class TriggerGenReplayIdxCmd extends TokenCmd
 {
 
     private $course;
-
-    public function TriggerReplayIdx($sdkAppID,$groupNum,$customMsg,&$errorCode,&$errorInfo)
+    
+    //&$errorCode:腾讯云返回的错误码
+    //&$errorInfo:腾讯云反馈的错误信息
+    //&$fileUrl:如果索引文件已经存在,腾讯云也会返回,此为文件url
+    //&$createTime:如果索引文件已经存在,腾讯云也会返回,此为文件创建时间
+    public function TriggerReplayIdx($sdkAppID,$groupNum,$customMsg,&$errorCode,&$errorInfo,&$fileUrl,&$createTime)
     {
         $appAdmins = unserialize(GLOBAL_CONFIG_SDK_ADMIN);
         $identifier = $appAdmins[$sdkAppID];
@@ -47,17 +51,31 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         
         //将消息序列化为json串
         $req_data = json_encode($customMsg);
-        $ret = $api->api($servicename,$command,$identifier, $usersig, $req_data,false);
-        if($ret == null)
+        $retString = $api->api($servicename,$command,$identifier, $usersig, $req_data,false);
+        if($retString == null)
         {
             return -2;
         }
-        $ret = json_decode($ret, true);
-        $errorCode=$ret["ErrorCode"];
-        $errorInfo=$ret["ErrorInfo"];
-        if($ret["ErrorCode"]!=0)
+        $this->logstr.=("|triger server ret:".$retString);
+        $retJson = json_decode($retString, true);
+        $errorCode=$retJson["ErrorCode"];
+        $errorInfo=$retJson["ErrorInfo"];
+        if($retJson["ErrorCode"]!=0)
         {
             return -3;
+        }
+        //索引文件已经存在；回调请求包，生成成功时有此字段. 这个时候不会有回调了
+        if(array_key_exists("ReplayIndex",$retJson) && is_array($retJson["ReplayIndex"]))
+        {
+            $ReplayIndex=$retJson["ReplayIndex"];
+            if(array_key_exists("FileUrl",$ReplayIndex) && is_string($ReplayIndex["FileUrl"]))
+            {
+                $fileUrl=$ReplayIndex["FileUrl"];
+            }
+            if(array_key_exists("CreateTime",$ReplayIndex) && is_int($ReplayIndex["CreateTime"]))
+            {
+                $createTime=$ReplayIndex["CreateTime"];
+            }
         }
         return 0;
     }
@@ -86,7 +104,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         {
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
-        //只有老师才可以开课
+        //只有老师才可以触发回调
         if( $this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
             || $this->course->getHostUin() != $this->account->getUin())
         {
@@ -127,7 +145,10 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $customMsg["UserList"]=$UserList;
         $errorCode=0;
         $errorInfo="";
-        $retTrig = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),$customMsg,$errorCode,$errorInfo);
+        $fileUrl="";
+        $createTime=0;
+        $retTrig = $this->TriggerReplayIdx($this->appID,(string)$this->course->getRoomID(),
+               $customMsg,$errorCode,$errorInfo,$fileUrl,$createTime);
         if($retTrig<0)
         {
             //更新课程信息
@@ -145,6 +166,9 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $data[course::FIELD_TRIGGER_REPLAY_IDX_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
         $data[course::FIELD_TRIGGER_REPLAY_IDX_RESULT] = 0;
+        $data[course::FIELD_REPLAY_IDX_URL] = $fileUrl;
+        $data[course::FIELD_REPLAY_IDX_CREATED_TIME] = $createTime;
+        $data[course::FIELD_REPLAY_IDX_CREATED_RESULT] = 0;
         $ret = $this->course->update($this->course->getRoomID(),$data); 
         if ($ret<0)
         {
