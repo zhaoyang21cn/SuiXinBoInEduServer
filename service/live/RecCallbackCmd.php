@@ -145,8 +145,8 @@ class RecCallbackCmd extends SimpleCmd
                 {
                     return new CmdResp4RecCall(ERR_REQ_DATA, 'decode stream_param.userid error');
                 }
-                $this->logstr.=("|uid=".$this->uid);
                 $this->uid = $userid_decode[0];
+                $this->logstr.=("|uid=".$this->uid);
             }
         }
         return new CmdResp4RecCall(ERR_SUCCESS, '');

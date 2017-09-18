@@ -18,29 +18,54 @@ require_once LIB_PATH . '/log/Log.php';
 class IdxEndCallbackCmd extends SimpleCmd
 {
     private $roomNum = 0;
-    private $replayIdxUrl = 0;
+    private $errorCode=0;
+    private $errorInfo="";
+    private $fileUrl = "";
+    private $createTime=0;
 
     public function parseInput()
     {
-        if (!isset($this->req['groupid']))
+        if(!array_key_exists("SrcRequest",$this->req) || !is_array($this->req["SrcRequest"]))
         {
-            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'lack of groupid');
+            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of SrcRequest or Invalid');
         }
-        if(!is_string($this->req['groupid']))
+        $SrcRequest=$this->req["SrcRequest"];
+        if(!array_key_exists("GroupId",$SrcRequest) || !is_string($SrcRequest["GroupId"]))
         {
-            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'invalid type of groupid');
+            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of SrcRequest.GroupId or Invalid');
         }
-        $this->roomNum = (int)$this->req['groupid'];
+        $this->roomNum = (int)$SrcRequest['GroupId'];
 
-        if (!isset($this->req['replayIdxUrl']))
+        if(!array_key_exists("ErrorCode",$this->req) || !is_int($this->req["ErrorCode"]))
         {
-            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'lack of replayIdxUrl');
+            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of ErrorCode or Invalid');
         }
-        if(!is_string($this->req['replayIdxUrl']))
+        $this->errorCode=$this->req["ErrorCode"];
+
+        if(!array_key_exists("ErrorInfo",$this->req) || !is_string($this->req["ErrorInfo"]))
         {
-            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'invalid type of replayIdxUrl');
+            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of ErrorInfo or Invalid');
         }
-        $this->replayIdxUrl = $this->req['replayIdxUrl'];
+        $this->errorInfo=$this->req["ErrorInfo"];
+
+        if($this->errorCode == 0)
+        {
+            if(!array_key_exists("ReplayIndex",$this->req) || !is_array($this->req["ReplayIndex"]))
+            {
+                return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of ReplayIndex or Invalid');
+            }
+            $ReplayIndex=$this->req["ReplayIndex"];
+            if(!array_key_exists("FileUrl",$ReplayIndex) || !is_string($ReplayIndex["FileUrl"]))
+            {
+                return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of ReplayIndex.FileUrl or Invalid');
+            }
+            $this->fileUrl=$ReplayIndex["FileUrl"];
+            if(!array_key_exists("CreateTime",$ReplayIndex) || !is_int($ReplayIndex["CreateTime"]))
+            {
+                return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of ReplayIndex.CreateTime or Invalid');
+            }
+            $this->createTime=$ReplayIndex["CreateTime"];
+        }
 
         return new CmdResp4IdxEndCall(ERR_SUCCESS, '');
     }
@@ -66,11 +91,12 @@ class IdxEndCallbackCmd extends SimpleCmd
         //更新课程信息
         $data = array();
         $data[course::FIELD_STATE] = course::COURSE_STATE_CAN_PLAYBACK;
-        $data[course::FIELD_REPLAY_IDX_URL] = $this->replayIdxUrl;
+        $data[course::FIELD_REPLAY_IDX_URL] = $this->fileUrl;
         $data[course::FIELD_LAST_UPDATE_TIME] = date('U');
         $data[course::FIELD_CAN_TRIGGER_REPLAY_IDX_TIME] = 0;
         $data[course::FIELD_REPLAY_IDX_CREATED_TIME] = date('U');
-        $data[course::FIELD_REPLAY_IDX_CREATED_RESULT] = 0;
+        $data[course::FIELD_REPLAY_IDX_CREATED_RESULT] = $this->errorCode;
+
         $ret = $course->update($this->roomNum,$data); 
         if ($ret<0)
         {
