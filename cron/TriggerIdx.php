@@ -5,16 +5,12 @@
 
 require_once  __DIR__ . '/../Path.php';
 require_once ROOT_PATH . '/ErrorNo.php';
+require_once ROOT_PATH . '/Config.php';
 require_once MODEL_PATH . '/Account.php';
 require_once MODEL_PATH . '/Course.php';
 
 require_once LIB_PATH . '/log/FileLogHandler.php';
 require_once LIB_PATH . '/log/Log.php';
-
-//***********************************************
-define('GLOBAL_CONFIG_HOST', '127.0.0.1:10000'); //crontab需要访问业务后台自身. 这里主要设置端口.
-//***********************************************
-
 
 /**
  * 向服务器发送请求
