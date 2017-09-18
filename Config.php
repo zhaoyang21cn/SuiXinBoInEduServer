@@ -19,4 +19,6 @@ define('GLOBAL_CONFIG_COS_REGION', 'Your_COS_REGION'); //设置COS所在的区�
 define('GLOBAL_CONFIG_COS_SIG_EXPIRATION',2592000 ); //签名有效期,单位:秒,默认值30*24*3600
 define('GLOBAL_CONFIG_COS_PREVIEW_TAG','preview' ); //文档预览域名[bucket]-[appid].[preview_tag].myqcloud.com中的[preview_tag]号部分
 
+//其他
+define('GLOBAL_CONFIG_HOST', '127.0.0.1:80'); //crontab需要访问业务后台自身. 这里主要设置端口.
 ?>
