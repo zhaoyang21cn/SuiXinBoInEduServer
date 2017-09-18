@@ -5,7 +5,7 @@
 require_once dirname(__FILE__) . '/../../Path.php';
 
 require_once ROOT_PATH . '/Config.php';
-require_once SERVICE_PATH . '/TokenCmd.php';
+require_once SERVICE_PATH . '/SimpleCmd.php';
 require_once SERVICE_PATH . '/CmdResp.php';
 require_once ROOT_PATH . '/ErrorNo.php';
 require_once MODEL_PATH . '/Course.php';
@@ -15,9 +15,10 @@ require_once DEPS_PATH . '/PhpServerSdk/MyTimRestApi.php';
 require_once LIB_PATH . '/log/FileLogHandler.php';
 require_once LIB_PATH . '/log/Log.php';
 
-class TriggerGenReplayIdxCmd extends TokenCmd
+//这个信令可以通过crontab后台自动触发.不校验token
+class TriggerGenReplayIdxCmd extends SimpleCmd
 {
-
+    protected $appID;
     private $course;
     
     //&$errorCode:腾讯云返回的错误码
@@ -36,7 +37,7 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         $api->init($sdkAppID, $identifier);
 
         //set_user_sig可以设置已有的签名
-        //$api->set_user_sig($this->account->getUserSig());
+        //$api->set_user_sig($cached_sig);
         //生成签名，有效期一天
         $ret = $api->generate_user_sig($identifier, '86400', $private_key_path, $signature_tool);
         if ($ret == null)
@@ -81,6 +82,16 @@ class TriggerGenReplayIdxCmd extends TokenCmd
     }
     public function parseInput()
     {
+        if (empty($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Lack of appid');
+        }
+        if (!is_int($this->req['appid']))
+        {
+            return new CmdResp(ERR_REQ_DATA, 'Invalid appid');
+        }
+        $this->appID=$this->req['appid'];
+
         $this->course = new Course();
 
         if (!isset($this->req['roomnum']))
@@ -104,17 +115,28 @@ class TriggerGenReplayIdxCmd extends TokenCmd
         {
             return new CmdResp(ERR_AV_ROOM_NOT_EXIST, 'get room info failed');
         }
-        //只有老师才可以触发回调
-        if( $this->account->getRole()!=Account::ACCOUNT_ROLE_TEACHER
-            || $this->course->getHostUin() != $this->account->getUin())
-        {
-            return new CmdResp(ERR_NO_PRIVILEGE, ' only the teacher who created the course can call it.');
-        }
         //检查课程状态是否正常
         if($this->course->getState()!=course::COURSE_STATE_HAS_LIVED)
         {
             return new CmdResp(ERR_ROOM_STATE, ' only state=has_lived room can create replay idx file');
         }
+
+        //校验appid
+        $hostUin=$this->course->getHostUin();
+        $this->logstr.=("|host_uin=".$hostUin);
+        $hostAccount=new Account();
+        $hostAccount->setUin($hostUin);
+        $error_msg="";
+        $ret=$hostAccount->getAccountRecordByUin($error_msg);
+        if ($ret != ERR_SUCCESS)
+        {
+           return new CmdResp(ERR_SERVER, 'Server error: get host uin info failed.'.$error_msg); 
+        }
+        if($this->appID != $hostAccount->getAppID())
+        {
+            return new CmdResp(ERR_REQ_DATA, 'appid is diff from appid of the host.');
+        }
+
         //检查是否到了能发起生成索引文件的时候
         if($this->course->getCanTriggerReplayIdxTime()==0 
             || $this->course->getCanTriggerReplayIdxTime()>date('U')

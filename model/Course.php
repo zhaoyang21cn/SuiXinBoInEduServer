@@ -669,6 +669,46 @@ class Course
         
         return $rows;
     }
+
+    /* 功能：找出可以触发生成索引的课程id列表
+     * 说明：成功返回课程id列表,失败返回null
+     */
+    public static function getCanTrigIdxCourseList()
+    {
+        $rows=array();
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            return null;
+        }
+
+        try
+        {
+            $sql = 'select room_id from t_course where state=:state and can_trigger_replay_idx_time!=0 
+                and can_trigger_replay_idx_time+1<:now_utc and trigger_replay_idx_time=0';
+            $stmt = $dbh->prepare($sql);
+            $state=self::COURSE_STATE_HAS_LIVED;
+            $stmt->bindParam(":state", $state, PDO::PARAM_INT);
+            $now_utc=date('U');
+            $stmt->bindParam(":now_utc", $now_utc, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            if (!$result)
+            {
+                return null;
+            }
+            $rows = $stmt->fetchAll();
+            if (empty($rows))
+            {
+                return array();
+            }
+        }
+        catch (PDOException $e)
+        {
+            return null;
+        }
+        
+        return $rows;
+    }
 }
 
 

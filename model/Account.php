@@ -8,6 +8,19 @@ require_once LIB_PATH . '/db/DB.php';
 
 class Account
 {
+    const FIELD_UIN = 'uin';
+    const FIELD_UID = 'uid';
+    const FIELD_APPID = 'appid';
+    const FIELD_ROLE = 'role';
+    const FIELD_PWD = 'pwd';
+    const FIELD_TOKEN = 'token';
+    const FIELD_USER_SIG = 'user_sig';
+    const FIELD_REGISTER_TIME = 'register_time';
+    const FIELD_LOGIN_TIME = 'login_time';
+    const FIELD_LOGOUT_TIME = 'logout_time';
+    const FIELD_LAST_REQUEST_TIME = 'last_request_time';
+
+    ////////////////////////////////
     const ACCOUNT_ROLE_STUDENT=0; //老师
     const ACCOUNT_ROLE_TEACHER=1; //学生
 
@@ -170,6 +183,35 @@ class Account
         $this->lastRequestTime = $lastRequestTime;
     }
 
+
+    /* 功能：查询结果行初始化记录对象
+     */
+    private function InitFromDBFields($fields)
+    {
+        if(array_key_exists(self::FIELD_UIN, $fields))
+            $this->uin = $fields[self::FIELD_UIN];
+        if(array_key_exists(self::FIELD_UID, $fields))
+            $this->uid = $fields[self::FIELD_UID];
+        if(array_key_exists(self::FIELD_APPID, $fields))
+            $this->appID = $fields[self::FIELD_APPID];
+        if(array_key_exists(self::FIELD_ROLE, $fields))
+            $this->role = $fields[self::FIELD_ROLE];
+        if(array_key_exists(self::FIELD_PWD, $fields))
+            $this->pwd = $fields[self::FIELD_PWD];
+        if(array_key_exists(self::FIELD_TOKEN, $fields))
+            $this->token = $fields[self::FIELD_TOKEN];
+        if(array_key_exists(self::FIELD_USER_SIG, $fields))
+            $this->userSig = $fields[self::FIELD_USER_SIG];
+        if(array_key_exists(self::FIELD_REGISTER_TIME, $fields))
+            $this->registerTime = $fields[self::FIELD_REGISTER_TIME];
+        if(array_key_exists(self::FIELD_LOGIN_TIME, $fields))
+            $this->loginTime = $fields[self::FIELD_LOGIN_TIME];
+        if(array_key_exists(self::FIELD_LOGOUT_TIME, $fields))
+            $this->logoutTime = $fields[self::FIELD_LOGOUT_TIME];
+        if(array_key_exists(self::FIELD_LAST_REQUEST_TIME, $fields))
+            $this->lastRequestTime = $fields[self::FIELD_LAST_REQUEST_TIME];
+    }
+
     /* 功能：通过用户名获取用户的个人账号信息
      * 说明：用户名通过Account对象成员获取，查询到的个人账号信息直接存储在
      *        Account对象成员中；成功返回0，error_msg为空；失败则返回错误码，
@@ -207,6 +249,7 @@ class Account
             }
 
             $this->uin= $row['uin'];
+            $this->uid= $row['uid'];
             $this->appID= $row['appid'];
             $this->role= $row['role'];
             $this->pwd= $row['pwd'];
@@ -225,6 +268,50 @@ class Account
         $error_msg = '';
         return ERR_SUCCESS;
     }
+
+    /* 功能：通过uin获取用户的个人账号信息
+     * 说明：用户名通过Account对象成员获取，查询到的个人账号信息直接存储在
+     *        Account对象成员中；成功返回0，error_msg为空；失败则返回错误码，
+     *        设置错误信息error_msg。    
+     */
+    public function getAccountRecordByUin(&$error_msg)
+    {
+        $dbh = DB::getPDOHandler();
+        if (is_null($dbh))
+        {
+            $error_msg = 'Server inner error';
+            return ERR_SERVER;
+        }
+        try
+        {
+            $sql = 'SELECT * from t_account WHERE uin=:uin';
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindParam(':uin', $this->uin, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            if (!$result)
+            {
+                $error_msg = 'Server inner error';
+                return ERR_SERVER;
+            }
+            
+            if ($stmt->rowCount() == 0)
+            {
+                $error_msg = 'User not exist';
+                return ERR_USER_NOT_EXIST;
+            }
+            $row = $stmt->fetch();
+            
+            $this->InitFromDBFields($row);
+        }
+        catch (PDOException $e)
+        {
+            $error_msg = 'Server inner error';
+            return ERR_SERVER;
+        }
+        $error_msg = '';
+        return ERR_SUCCESS;
+    }
+
 
     /* 功能：通过用户Token获取用户的个人账号信息
      * 说明：用户Token通过Account对象成员获取，查询到的个人账号信息直接存储在
@@ -270,6 +357,7 @@ class Account
             $this->appID= $row['appid'];
             $this->role= $row['role'];
             $this->pwd= $row['pwd'];
+            $this->token = $row['token'];
             $this->userSig = $row['user_sig'];
             $this->registerTime = $row['register_time'];
             $this->loginTime = $row['login_time'];
