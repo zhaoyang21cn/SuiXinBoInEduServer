@@ -180,7 +180,7 @@ class RecCallbackCmd extends SimpleCmd
             $customMsg=array();
             $customMsg["type"]=1004;
             $customMsg["seq"]=rand(10000, 100000000);
-            $customMsg["timestamp"]=date('U');
+            $customMsg["timestamp"]=(int)date('U');
             $customValue=array();
             $customValue['uid']=$this->uid;
             $customValue['start_time']=$this->startTime;

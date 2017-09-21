@@ -78,7 +78,7 @@ class ReportRoomMemberCmd extends TokenCmd
         //检查课程状态是否正常
         if($course->getState()!=course::COURSE_STATE_LIVING)
         {
-            return new CmdResp(ERR_ROOM_STATE, 'can only enter a state=living room');
+            return new CmdResp(ERR_ROOM_STATE, 'can only enter/exit a state=living room');
         }
 
         //检查直播房间是否已经存在
