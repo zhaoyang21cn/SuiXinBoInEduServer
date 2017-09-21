@@ -25,11 +25,16 @@ class IdxEndCallbackCmd extends SimpleCmd
 
     public function parseInput()
     {
-        if(!array_key_exists("SrcRequest",$this->req) || !is_array($this->req["SrcRequest"]))
+        //SrcRequest 本身是个字符串,需要二次解析
+        if(!array_key_exists("SrcRequest",$this->req) || !is_string($this->req["SrcRequest"]))
         {
             return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of SrcRequest or Invalid');
         }
-        $SrcRequest=$this->req["SrcRequest"];
+        $SrcRequest=json_decode($this->req["SrcRequest"], true, 12);
+        if(is_null($SrcRequest) || !is_array($SrcRequest))
+        {
+            return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'decode SrcRequest failed.');
+        }
         if(!array_key_exists("GroupId",$SrcRequest) || !is_string($SrcRequest["GroupId"]))
         {
             return new CmdResp4IdxEndCall(ERR_REQ_DATA, 'Lack of SrcRequest.GroupId or Invalid');

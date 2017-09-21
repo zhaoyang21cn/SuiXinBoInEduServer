@@ -72,7 +72,8 @@ class ReportRoomMemberCmd extends TokenCmd
         //这个接口是学生专用
         if($course->getHostUin() == $this->account->getUin())
         {
-            return new CmdResp(ERR_NO_PRIVILEGE, 'only the student can call this api.');
+            //老师上课过程中,如果异常退出,可以通过这个接口进入课堂
+            //return new CmdResp(ERR_NO_PRIVILEGE, 'only the student can call this api.');
         }
 
         //检查课程状态是否正常
@@ -101,7 +102,8 @@ class ReportRoomMemberCmd extends TokenCmd
             && array_key_exists("has_exited",$usrInfo)
             && $usrInfo["has_exited"]==ClassMember::HAS_EXITED_NO)
         {
-            return new CmdResp(ERR_REPEATE_ENTER, 'can not repeat enter a room.'); 
+            //先允许重复进.客户端机器重启时时间戳可能置0.需要再次上报进入动作
+            //return new CmdResp(ERR_REPEATE_ENTER, 'can not repeat enter a room.'); 
         }
 
         //不在房间,但是退出
