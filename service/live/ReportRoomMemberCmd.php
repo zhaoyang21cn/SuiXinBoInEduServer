@@ -117,7 +117,8 @@ class ReportRoomMemberCmd extends TokenCmd
             && array_key_exists("has_exited",$usrInfo)
             && $usrInfo["has_exited"]==ClassMember::HAS_EXITED_YES)
         {
-            return new CmdResp(ERR_REPEATE_EXIT, 'can not repeat exit a room.'); 
+            //允许重复退出
+            //return new CmdResp(ERR_REPEATE_EXIT, 'can not repeat exit a room.'); 
         }
 
         $ret = false;
