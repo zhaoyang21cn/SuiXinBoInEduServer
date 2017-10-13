@@ -19,7 +19,7 @@ function clear()
     Log::init($handler);
 
    //找出N秒无心跳的直播课堂
-   $roomList=Course::getDeathCourseList(60);
+   $roomList=Course::getDeathCourseList(300);
    if(!is_null($roomList))
    {
         foreach ($roomList as $room)
@@ -43,7 +43,7 @@ function clear()
    }
 
    //退出N秒内没有收到心跳包的课堂里的成员
-   ClassMember::exitDeathRoomMember(30,Account::ACCOUNT_ROLE_STUDENT);
+   ClassMember::exitDeathRoomMember(120,Account::ACCOUNT_ROLE_STUDENT);
 
    //删掉很久以前的课程成员信息
    ClassMember::delOldRoomMember(3600*24*60);
